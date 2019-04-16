@@ -9,7 +9,7 @@ public protocol GalleryControllerDelegate: class {
   func galleryControllerDidCancel(_ controller: GalleryController)
 }
 
-public class GalleryController: UIViewController, PermissionControllerDelegate {
+open class GalleryController: UIViewController, PermissionControllerDelegate {
 
   public weak var delegate: GalleryControllerDelegate?
 
@@ -27,7 +27,7 @@ public class GalleryController: UIViewController, PermissionControllerDelegate {
 
   // MARK: - Life cycle
 
-  public override func viewDidLoad() {
+  open override func viewDidLoad() {
     super.viewDidLoad()
 
     setup()
@@ -40,7 +40,7 @@ public class GalleryController: UIViewController, PermissionControllerDelegate {
     }
   }
 
-  public override var prefersStatusBarHidden : Bool {
+  open override var prefersStatusBarHidden : Bool {
     return true
   }
 
@@ -48,8 +48,8 @@ public class GalleryController: UIViewController, PermissionControllerDelegate {
 
   func makeImagesController() -> ImagesController {
     let controller = ImagesController(cart: cart)
-    controller.title = "Gallery.Images.Title".g_localize(fallback: "PHOTOS")
-
+//    controller.title = "Gallery.Images.Title".g_localize(fallback: "PHOTOS")
+    controller.title = "Library"
     return controller
   }
 

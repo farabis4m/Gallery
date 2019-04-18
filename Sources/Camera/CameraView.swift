@@ -6,6 +6,11 @@ protocol CameraViewDelegate: class {
 }
 
 class CameraView: UIView, UIGestureRecognizerDelegate {
+    
+    enum CameraMode {
+        case image
+        case video
+    }
 
   lazy var closeButton: UIButton = self.makeCloseButton()
   lazy var flashButton: TripleButton = self.makeFlashButton()

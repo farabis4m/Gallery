@@ -20,13 +20,18 @@ class AlbumCell: UITableViewCell {
 
   // MARK: - Config
 
-  func configure(_ album: Album) {
-    albumTitleLabel.text = album.collection.localizedTitle
-    itemCountLabel.text = "\(album.items.count)"
-
-    if let item = album.items.first {
-      albumImageView.layoutIfNeeded()
-      albumImageView.g_loadImage(item.asset)
+  func configure(_ album: MediaAlbum) {
+    albumTitleLabel.text = album.title
+    itemCountLabel.text = album.count
+    
+    if case let MediaMode.image(images) = album.mode, let item = images.first {
+        albumImageView.layoutIfNeeded()
+        albumImageView.g_loadImage(item.asset)
+    }
+    
+    if case let MediaMode.video(videos) = album.mode, let item = videos.first {
+        albumImageView.layoutIfNeeded()
+        albumImageView.g_loadImage(item.asset)
     }
   }
 
@@ -37,6 +42,7 @@ class AlbumCell: UITableViewCell {
         addSubview($0)
     }
 
+    selectionStyle = .none
     albumImageView.g_pin(on: .left, constant: 12)
     albumImageView.g_pin(on: .top, constant: 5)
     albumImageView.g_pin(on: .bottom, constant: -5)
@@ -48,6 +54,10 @@ class AlbumCell: UITableViewCell {
 
     itemCountLabel.g_pin(on: .left, view: albumImageView, on: .right, constant: 10)
     itemCountLabel.g_pin(on: .top, view: albumTitleLabel, on: .bottom, constant: 6)
+    
+    backgroundColor = UIColor.clear
+    contentView.backgroundColor = .clear
+
   }
 
   // MARK: - Controls
@@ -64,6 +74,7 @@ class AlbumCell: UITableViewCell {
   private func makeAlbumTitleLabel() -> UILabel {
     let label = UILabel()
     label.numberOfLines = 1
+    label.textColor = UIColor.white
     label.font = Config.Font.Text.regular.withSize(14)
 
     return label
@@ -71,6 +82,7 @@ class AlbumCell: UITableViewCell {
 
   private func makeItemCountLabel() -> UILabel {
     let label = UILabel()
+    label.textColor = .white
     label.numberOfLines = 1
     label.font = Config.Font.Text.regular.withSize(10)
 

@@ -11,15 +11,14 @@ class CameraView: UIView, UIGestureRecognizerDelegate {
         case image
         case video
     }
+    
+    lazy var topView: TopView = makeTopView()
 
-  lazy var closeButton: UIButton = self.makeCloseButton()
   lazy var flashButton: TripleButton = self.makeFlashButton()
   lazy var rotateButton: UIButton = self.makeRotateButton()
   fileprivate lazy var bottomContainer: UIView = self.makeBottomContainer()
   lazy var bottomView: UIView = self.makeBottomView()
-  lazy var stackView: StackView = self.makeStackView()
   lazy var shutterButton: ShutterButton = self.makeShutterButton()
-  lazy var doneButton: UIButton = self.makeDoneButton()
   lazy var focusImageView: UIImageView = self.makeFocusImageView()
   lazy var tapGR: UITapGestureRecognizer = self.makeTapGR()
   lazy var rotateOverlayView: UIView = self.makeRotateOverlayView()
@@ -31,6 +30,12 @@ class CameraView: UIView, UIGestureRecognizerDelegate {
   weak var delegate: CameraViewDelegate?
 
   // MARK: - Initialization
+    
+    
+    private func makeTopView() -> TopView {
+        let view = TopView()
+        return view
+    }
 
   override init(frame: CGRect) {
     super.init(frame: frame)
@@ -47,8 +52,15 @@ class CameraView: UIView, UIGestureRecognizerDelegate {
 
   func setup() {
     addGestureRecognizer(tapGR)
+    
+    addSubview(topView)
+    
+    topView.g_pin(on: .left)
+    topView.g_pin(on: .right)
+    topView.g_pin(on: .top)
+    topView.g_pin(height: 52)
 
-    [closeButton, flashButton, rotateButton, bottomContainer].forEach {
+    [rotateButton, bottomContainer].forEach {
       addSubview($0)
     }
 
@@ -56,11 +68,7 @@ class CameraView: UIView, UIGestureRecognizerDelegate {
       bottomContainer.addSubview($0)
     }
 
-    [stackView, doneButton].forEach {
-      bottomView.addSubview($0)
-    }
-
-    [closeButton, flashButton, rotateButton].forEach {
+    [flashButton, rotateButton].forEach {
       $0.g_addShadow()
     }
 
@@ -69,45 +77,44 @@ class CameraView: UIView, UIGestureRecognizerDelegate {
     insertSubview(focusImageView, belowSubview: bottomContainer)
     insertSubview(shutterOverlayView, belowSubview: bottomContainer)
 
-    closeButton.g_pin(on: .left)
-    closeButton.g_pin(size: CGSize(width: 44, height: 44))
-
-    flashButton.g_pin(on: .centerY, view: closeButton)
-    flashButton.g_pin(on: .centerX)
-    flashButton.g_pin(size: CGSize(width: 60, height: 44))
-
-    rotateButton.g_pin(on: .right)
-    rotateButton.g_pin(size: CGSize(width: 44, height: 44))
-
-    if #available(iOS 11, *) {
-      Constraint.on(
-        closeButton.topAnchor.constraint(equalTo: safeAreaLayoutGuide.topAnchor),
-        rotateButton.topAnchor.constraint(equalTo: safeAreaLayoutGuide.topAnchor)
-      )
-    } else {
-      Constraint.on(
-        closeButton.topAnchor.constraint(equalTo: topAnchor),
-        rotateButton.topAnchor.constraint(equalTo: topAnchor)
-      )
-    }
-
     bottomContainer.g_pinDownward()
-    bottomContainer.g_pin(height: 80)
+    bottomContainer.g_pin(height: 101)
     bottomView.g_pinEdges()
 
-    stackView.g_pin(on: .centerY, constant: -4)
-    stackView.g_pin(on: .left, constant: 38)
-    stackView.g_pin(size: CGSize(width: 56, height: 56))
 
     shutterButton.g_pinCenter()
     shutterButton.g_pin(size: CGSize(width: 60, height: 60))
-    
-    doneButton.g_pin(on: .centerY)
-    doneButton.g_pin(on: .right, constant: -38)
 
-    rotateOverlayView.g_pinEdges()
+//    rotateOverlayView.g_pinEdges()
+    
+    rotateOverlayView.g_pin(on: .top, constant: 51)
+    rotateOverlayView.g_pin(on: .left)
+    rotateOverlayView.g_pin(on: .right)
+    rotateOverlayView.g_pin(on: .bottom, constant: 101)
+    
+    rotateOverlayView.g_pin(on: .top, constant: 51)
+    rotateOverlayView.g_pin(on: .left)
+    rotateOverlayView.g_pin(on: .right)
+    rotateOverlayView.g_pin(on: .bottom, constant: 101)
+    
     blurView.g_pinEdges()
-    shutterOverlayView.g_pinEdges()
+//    shutterOverlayView.g_pinEdges()
+    
+    shutterOverlayView.g_pin(on: .top, constant: 51)
+    shutterOverlayView.g_pin(on: .left)
+    shutterOverlayView.g_pin(on: .right)
+    shutterOverlayView.g_pin(on: .bottom, constant: 101)
+    
+    addSubview(flashButton)
+    flashButton.g_pin(on: .centerY, view: shutterButton)
+    flashButton.g_pin(on: .left, constant: 10)
+    flashButton.g_pin(size: CGSize(width: 60, height: 44))
+    
+    addSubview(rotateButton)
+    rotateButton.g_pin(on: .centerY, view: shutterButton)
+    rotateButton.g_pin(on: .right)
+    rotateButton.g_pin(size: CGSize(width: 44, height: 44))
+    
   }
 
   func setupPreviewLayer(_ session: AVCaptureSession) {
@@ -119,15 +126,21 @@ class CameraView: UIView, UIGestureRecognizerDelegate {
     layer.connection?.videoOrientation = Utils.videoOrientation()
     
     self.layer.insertSublayer(layer, at: 0)
-    layer.frame = self.layer.bounds
+    
+    layer.frame = previewFrame
 
     previewLayer = layer
   }
+    
+    var previewFrame: CGRect {
+        let statusBarHeight = UIApplication.shared.statusBarFrame.height
+        return CGRect(x: 0, y: 51 + statusBarHeight, width: bounds.size.width, height: bounds.size.height - 152)
+    }
 
   override func layoutSubviews() {
     super.layoutSubviews()
 
-    previewLayer?.frame = self.layer.bounds
+    previewLayer?.frame = previewFrame
   }
 
   // MARK: - Action
@@ -161,12 +174,12 @@ class CameraView: UIView, UIGestureRecognizerDelegate {
   }
 
   // MARK: - UIGestureRecognizerDelegate
-  override func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
-    let point = gestureRecognizer.location(in: self)
-
-    return point.y > closeButton.frame.maxY
-      && point.y < bottomContainer.frame.origin.y
-  }
+//  override func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
+//    let point = gestureRecognizer.location(in: self)
+//
+//    return point.y > closeButton.frame.maxY
+//      && point.y < bottomContainer.frame.origin.y
+//  }
 
   // MARK: - Controls
 
@@ -271,5 +284,4 @@ class CameraView: UIView, UIGestureRecognizerDelegate {
 
     return blurView
   }
-
 }

@@ -1,5 +1,6 @@
 import UIKit
 
+
 protocol PageAware: class {
   func pageDidShow()
 }
@@ -31,7 +32,7 @@ class PagesController: UIViewController {
 
   override func viewDidLoad() {
     super.viewDidLoad()
-
+    scrollView.isScrollEnabled = false
     view.backgroundColor = .black
     setup()
   }

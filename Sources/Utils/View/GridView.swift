@@ -44,10 +44,6 @@ class GridView: UIView {
       addSubview($0)
     }
 
-//    [closeButton, arrowButton].forEach {
-//      topView.addSubview($0)
-//    }
-
     [bottomBlurView, doneButton].forEach {
         bottomView.addSubview($0)
     }
@@ -55,7 +51,7 @@ class GridView: UIView {
     Constraint.on(
       topView.leftAnchor.constraint(equalTo: topView.superview!.leftAnchor),
       topView.rightAnchor.constraint(equalTo: topView.superview!.rightAnchor),
-      topView.heightAnchor.constraint(equalToConstant: 60),
+      topView.heightAnchor.constraint(equalToConstant: 52),
 
       loadingIndicator.centerXAnchor.constraint(equalTo: loadingIndicator.superview!.centerXAnchor),
       loadingIndicator.centerYAnchor.constraint(equalTo: loadingIndicator.superview!.centerYAnchor)
@@ -111,8 +107,6 @@ class GridView: UIView {
 
   private func makeTopView() -> TopView {
     let view = TopView()
-    view.backgroundColor = UIColor.red
-
     return view
   }
 
@@ -248,6 +242,8 @@ class TopView: UIView {
     
     private func setup() {
         addSubview(buttonLeft)
+        
+        backgroundColor = .red
         
         NSLayoutConstraint.activate([
             buttonLeft.leadingAnchor.constraint(equalTo: leadingAnchor, constant: padding),

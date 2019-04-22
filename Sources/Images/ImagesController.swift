@@ -260,7 +260,7 @@ extension ImagesController: DropdownControllerDelegate {
   }
     
     func updateTopView() {
-        gridView.isButtonRightHidden = cart.images.count == 0 && cart.video == nil
+//        gridView.isButtonRightHidden = cart.images.count == 0 && cart.video == nil
     }
 }
 

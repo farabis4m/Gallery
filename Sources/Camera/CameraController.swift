@@ -62,7 +62,6 @@ class CameraController: UIViewController {
     cameraView.flashButton.addTarget(self, action: #selector(flashButtonTouched(_:)), for: .touchUpInside)
     cameraView.rotateButton.addTarget(self, action: #selector(rotateButtonTouched(_:)), for: .touchUpInside)
     cameraView.shutterButton.addTarget(self, action: #selector(shutterButtonTouched(_:)), for: .touchUpInside)
-    cameraView.topView.buttonLeft.addTarget(self, action: #selector(closeButtonTouched(_:)), for: .touchUpInside)
   }
 
   func setupLocation() {

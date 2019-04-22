@@ -3,18 +3,18 @@ import Photos
 
 class GridView: UIView {
 
-    var isButtonRightHidden = false {
-        didSet {
-            topView.buttonRight.isHidden = isButtonRightHidden
-        }
-    }
+//    var isButtonRightHidden = false {
+//        didSet {
+//            topView.buttonRight.isHidden = isButtonRightHidden
+//        }
+//    }
     
     var didTapButtonLeft: ((UIButton) -> Void )?
     var didTapButtonRight: ((UIButton) -> Void )?
     
   // MARK: - Initialization
 
-  lazy var topView: TopView = self.makeTopView()
+//  lazy var topView: TopView = self.makeTopView()
   lazy var bottomView: UIView = self.makeBottomView()
   lazy var bottomBlurView: UIVisualEffectView = self.makeBottomBlurView()
 //  lazy var arrowButton: ArrowButton = self.makeArrowButton()
@@ -40,7 +40,7 @@ class GridView: UIView {
   // MARK: - Setup
 
   private func setup() {
-    [collectionView, bottomView, topView, emptyView, loadingIndicator].forEach {
+    [collectionView, bottomView, emptyView, loadingIndicator].forEach {
       addSubview($0)
     }
 
@@ -49,23 +49,23 @@ class GridView: UIView {
     }
 
     Constraint.on(
-      topView.leftAnchor.constraint(equalTo: topView.superview!.leftAnchor),
-      topView.rightAnchor.constraint(equalTo: topView.superview!.rightAnchor),
-      topView.heightAnchor.constraint(equalToConstant: 52),
+//      topView.leftAnchor.constraint(equalTo: topView.superview!.leftAnchor),
+//      topView.rightAnchor.constraint(equalTo: topView.superview!.rightAnchor),
+//      topView.heightAnchor.constraint(equalToConstant: 52),
 
       loadingIndicator.centerXAnchor.constraint(equalTo: loadingIndicator.superview!.centerXAnchor),
       loadingIndicator.centerYAnchor.constraint(equalTo: loadingIndicator.superview!.centerYAnchor)
     )
 
-    if #available(iOS 11, *) {
-      Constraint.on(
-        topView.topAnchor.constraint(equalTo: safeAreaLayoutGuide.topAnchor)
-      )
-    } else {
-      Constraint.on(
-        topView.topAnchor.constraint(equalTo: topView.superview!.topAnchor)
-      )
-    }
+//    if #available(iOS 11, *) {
+//      Constraint.on(
+//        topView.topAnchor.constraint(equalTo: safeAreaLayoutGuide.topAnchor)
+//      )
+//    } else {
+//      Constraint.on(
+//        topView.topAnchor.constraint(equalTo: topView.superview!.topAnchor)
+//      )
+//    }
 
     bottomView.g_pinDownward()
     bottomView.g_pin(height: 80)
@@ -73,7 +73,8 @@ class GridView: UIView {
     emptyView.g_pinEdges(view: collectionView)
     
     collectionView.g_pinDownward()
-    collectionView.g_pin(on: .top, view: topView, on: .bottom, constant: 1)
+//    collectionView.g_pin(on: .top, view: topView, on: .bottom, constant: 1)
+    collectionView.g_pin(on: .top, constant: 1)
 
     bottomBlurView.g_pinEdges()
 
@@ -86,11 +87,11 @@ class GridView: UIView {
 
     doneButton.g_pin(on: .centerY)
     doneButton.g_pin(on: .right, constant: -38)
-    
-    isButtonRightHidden = true
-    
-    topView.buttonLeft.addTarget(self, action: #selector(buttonLeftTapped(_:)), for: .touchUpInside)
-    topView.buttonRight.addTarget(self, action: #selector(buttonRightTapped(_:)), for: .touchUpInside)
+//
+//    isButtonRightHidden = true
+//
+//    topView.buttonLeft.addTarget(self, action: #selector(buttonLeftTapped(_:)), for: .touchUpInside)
+//    topView.buttonRight.addTarget(self, action: #selector(buttonRightTapped(_:)), for: .touchUpInside)
   }
     
     @objc
@@ -184,6 +185,9 @@ class TopView: UIView {
     
     var padding: CGFloat = 8
     
+    var didTapLeft: (() -> ())?
+    var didTapRight: (() -> ())?
+    
     var leftTitle: String? {
         didSet {
             buttonLeft.setTitle(leftTitle, for: .normal)
@@ -261,5 +265,16 @@ class TopView: UIView {
             buttonRight.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -padding),
             buttonRight.centerYAnchor.constraint(equalTo: centerYAnchor)
         ])
+        
+        buttonLeft.addTarget(self, action: #selector(buttonLeftTapped), for: .touchUpInside)
+        buttonRight.addTarget(self, action: #selector(buttonRightTapped), for: .touchUpInside)
+    }
+    
+    @objc private func buttonLeftTapped() {
+        didTapLeft?()
+    }
+    
+    @objc private func buttonRightTapped() {
+        didTapRight?()
     }
 }

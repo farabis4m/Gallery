@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		4E695D97226DD9B700606FE7 /* CameraManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E695D96226DD9B700606FE7 /* CameraManager.swift */; };
+		4E90503B226C42DA0068304C /* ArdhiCameraController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E90503A226C42DA0068304C /* ArdhiCameraController.swift */; };
+		4E90503D226C43960068304C /* CameraBottomView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E90503C226C43960068304C /* CameraBottomView.swift */; };
 		4ED17BE02268CE8F006043B4 /* CamerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4ED17BDF2268CE8F006043B4 /* CamerViewController.swift */; };
 		4ED17BE22268CE9E006043B4 /* VideoViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4ED17BE12268CE9E006043B4 /* VideoViewController.swift */; };
 		D24CF7321E93D1FB002E6484 /* Gallery.bundle in Resources */ = {isa = PBXBuildFile; fileRef = D24CF7311E93D1FB002E6484 /* Gallery.bundle */; };
@@ -73,6 +76,9 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		4E695D96226DD9B700606FE7 /* CameraManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraManager.swift; sourceTree = "<group>"; };
+		4E90503A226C42DA0068304C /* ArdhiCameraController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArdhiCameraController.swift; sourceTree = "<group>"; };
+		4E90503C226C43960068304C /* CameraBottomView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraBottomView.swift; sourceTree = "<group>"; };
 		4ED17BDF2268CE8F006043B4 /* CamerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CamerViewController.swift; sourceTree = "<group>"; };
 		4ED17BE12268CE9E006043B4 /* VideoViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoViewController.swift; sourceTree = "<group>"; };
 		D24CF7311E93D1FB002E6484 /* Gallery.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = Gallery.bundle; sourceTree = "<group>"; };
@@ -158,6 +164,7 @@
 			children = (
 				4ED17BDF2268CE8F006043B4 /* CamerViewController.swift */,
 				4ED17BE12268CE9E006043B4 /* VideoViewController.swift */,
+				4E695D96226DD9B700606FE7 /* CameraManager.swift */,
 			);
 			path = CameraViewController;
 			sourceTree = "<group>";
@@ -282,9 +289,11 @@
 				D2D1A6BC1F84F4DB0083D4C5 /* CameraController.swift */,
 				D2D1A6BD1F84F4DB0083D4C5 /* CameraMan.swift */,
 				D2D1A6BE1F84F4DB0083D4C5 /* CameraView.swift */,
+				4E90503C226C43960068304C /* CameraBottomView.swift */,
 				D2D1A6BF1F84F4DB0083D4C5 /* ShutterButton.swift */,
 				D2D1A6C01F84F4DB0083D4C5 /* StackView.swift */,
 				D2D1A6C11F84F4DB0083D4C5 /* TripleButton.swift */,
+				4E90503A226C42DA0068304C /* ArdhiCameraController.swift */,
 			);
 			path = Camera;
 			sourceTree = "<group>";
@@ -502,16 +511,19 @@
 				D2D1A6E71F84F4DB0083D4C5 /* VideoEditing.swift in Sources */,
 				D2D1A6EA1F84F4DB0083D4C5 /* ArrowButton.swift in Sources */,
 				D2D1A6D01F84F4DB0083D4C5 /* Config.swift in Sources */,
+				4E90503D226C43960068304C /* CameraBottomView.swift in Sources */,
 				D2D1A6D71F84F4DB0083D4C5 /* UIImageView+Extensions.swift in Sources */,
 				D2D1A6F91F84F4DB0083D4C5 /* VideosLibrary.swift in Sources */,
 				D2D1A6DF1F84F4DB0083D4C5 /* PageIndicator.swift in Sources */,
 				D2D1A6D11F84F4DB0083D4C5 /* Constraints.swift in Sources */,
+				4E695D97226DD9B700606FE7 /* CameraManager.swift in Sources */,
 				D2D1A6DD1F84F4DB0083D4C5 /* LocationManager.swift in Sources */,
 				D2D1A6F51F84F4DB0083D4C5 /* Video.swift in Sources */,
 				D2D1A6D31F84F4DB0083D4C5 /* EventHub.swift in Sources */,
 				D2D1A6CF1F84F4DB0083D4C5 /* ImagesLibrary.swift in Sources */,
 				D2D1A6EB1F84F4DB0083D4C5 /* EmptyView.swift in Sources */,
 				D2D1A6D81F84F4DB0083D4C5 /* UIScrollView+Extensions.swift in Sources */,
+				4E90503B226C42DA0068304C /* ArdhiCameraController.swift in Sources */,
 				D2D1A6CB1F84F4DB0083D4C5 /* Cart.swift in Sources */,
 				D2D1A6CE1F84F4DB0083D4C5 /* ImagesController.swift in Sources */,
 				D2D1A6E61F84F4DB0083D4C5 /* EditInfo.swift in Sources */,
@@ -670,7 +682,7 @@
 				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
 				INFOPLIST_FILE = "$(SRCROOT)/Gallery/Info-iOS.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "no.hyper.Gallery-iOS";
 				PRODUCT_NAME = Gallery;
@@ -692,7 +704,7 @@
 				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
 				INFOPLIST_FILE = "$(SRCROOT)/Gallery/Info-iOS.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "no.hyper.Gallery-iOS";
 				PRODUCT_NAME = Gallery;

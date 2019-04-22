@@ -7,13 +7,6 @@ protocol CameraViewDelegate: class {
 
 class CameraView: UIView, UIGestureRecognizerDelegate {
     
-    enum CameraMode {
-        case image
-        case video
-    }
-    
-    lazy var topView: TopView = makeTopView()
-
   lazy var flashButton: TripleButton = self.makeFlashButton()
   lazy var rotateButton: UIButton = self.makeRotateButton()
   fileprivate lazy var bottomContainer: UIView = self.makeBottomContainer()
@@ -30,12 +23,6 @@ class CameraView: UIView, UIGestureRecognizerDelegate {
   weak var delegate: CameraViewDelegate?
 
   // MARK: - Initialization
-    
-    
-    private func makeTopView() -> TopView {
-        let view = TopView()
-        return view
-    }
 
   override init(frame: CGRect) {
     super.init(frame: frame)
@@ -52,13 +39,6 @@ class CameraView: UIView, UIGestureRecognizerDelegate {
 
   func setup() {
     addGestureRecognizer(tapGR)
-    
-    addSubview(topView)
-    
-    topView.g_pin(on: .left)
-    topView.g_pin(on: .right)
-    topView.g_pin(on: .top)
-    topView.g_pin(height: 52)
 
     [rotateButton, bottomContainer].forEach {
       addSubview($0)
@@ -133,8 +113,7 @@ class CameraView: UIView, UIGestureRecognizerDelegate {
   }
     
     var previewFrame: CGRect {
-        let statusBarHeight = UIApplication.shared.statusBarFrame.height
-        return CGRect(x: 0, y: 51 + statusBarHeight, width: bounds.size.width, height: bounds.size.height - 152)
+        return CGRect(x: 0, y: 0, width: bounds.size.width, height: bounds.size.height - 101)
     }
 
   override func layoutSubviews() {

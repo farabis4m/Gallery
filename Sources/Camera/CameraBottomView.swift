@@ -10,6 +10,55 @@ import UIKit
 
 class CameraBottomView: UIView {
     
+    enum Mode {
+        case enabled
+        case disabled
+        
+        var flashImage: UIImage {
+            switch self {
+            case .enabled: return GalleryBundle.image("flash_auto")!
+            case .disabled: return GalleryBundle.image("flashdisabled")!
+            }
+        }
+        
+        var cameraImage: UIImage {
+            switch self {
+            case .enabled: return GalleryBundle.image("camera_button")!
+            case .disabled: return GalleryBundle.image("camera_disabled")!
+            }
+        }
+        
+        var videoImage: UIImage {
+            switch self {
+            case .enabled: return GalleryBundle.image("video")!
+            case .disabled: return GalleryBundle.image("camera_disabled")!
+            }
+        }
+        
+        var selfie: UIImage {
+            switch self {
+            case .enabled: return GalleryBundle.image("selfie")!
+            case .disabled: return GalleryBundle.image("selfiedisabled")!
+            }
+        }
+    }
+    
+    var mode: Mode = .enabled {
+        didSet {
+            enableDisable()
+        }
+    }
+    
+    func enableDisable() {
+        buttonCamera.setImage(mode.cameraImage, for: .normal)
+        buttonVideo.setImage(mode.videoImage, for: .normal)
+        buttonFlash.setImage(mode.flashImage, for: .normal)
+        buttonToggleCamera.setImage(mode.selfie, for: .normal)
+        
+        [buttonCamera, buttonVideo, buttonFlash].forEach { $0.isUserInteractionEnabled = mode == .enabled }
+    }
+    
+    
     typealias ButtonActionHandler = (UIButton) -> ()
     
     var didTapToggleCamera: ButtonActionHandler?
@@ -17,25 +66,22 @@ class CameraBottomView: UIView {
     var didTapCaptureVideo: ButtonActionHandler?
     var didTapbuttonFlash: ButtonActionHandler?
     
-    var mode: Mode = .camera {
+    var isRecording: Bool = false {
+        didSet {
+            buttonFlash.isHidden = isRecording
+            buttonToggleCamera.isHidden = isRecording
+        }
+    }
+    
+    var mediaType: ArdhiCameraController.MediaType = .camera {
         didSet {
             updateMode()
         }
     }
-    
-    enum Mode {
-        case camera
-        case video
-        
-        var cameraImage: UIImage? {
-            switch self {
-            case .camera: return GalleryBundle.image("camera_button")
-            case .video: return GalleryBundle.image("video")
-            }
-        }
-    }
+
     
     private lazy var buttonCamera = makeCameraButton()
+    private lazy var buttonVideo = makeVideoButton()
     private lazy var buttonFlash = makeFlashButton()
     private lazy var buttonToggleCamera = makeToggleCameraButton()
     
@@ -59,6 +105,10 @@ class CameraBottomView: UIView {
         buttonCamera.g_pinCenter()
         buttonCamera.g_pin(size: CGSize(width: 66, height: 66))
         
+        addSubview(buttonVideo)
+        buttonVideo.g_pinCenter()
+        buttonVideo.g_pin(size: CGSize(width: 66, height: 66))
+        
         addSubview(buttonFlash)
         buttonFlash.g_pin(on: .left, constant: 16)
         buttonFlash.g_pin(on: .centerY)
@@ -72,6 +122,7 @@ class CameraBottomView: UIView {
     
     func setupActions() {
         buttonToggleCamera.addTarget(self, action: #selector(buttonToggleCameraTapped(_:)), for: .touchUpInside)
+        buttonVideo.addTarget(self, action: #selector(buttonVideoTapped(_:)), for: .touchUpInside)
         buttonCamera.addTarget(self, action: #selector(buttonCameraTapped(_:)), for: .touchUpInside)
         buttonFlash.addTarget(self, action: #selector(buttonCameraTapped(_:)), for: .touchUpInside)
     }
@@ -80,11 +131,19 @@ class CameraBottomView: UIView {
 private extension CameraBottomView {
     
     private func updateMode() {
-        buttonCamera.setImage(mode.cameraImage, for: .normal)
+        buttonCamera.isHidden = mediaType == .video
+        buttonVideo.isHidden = mediaType == .camera
     }
 }
 
 private extension CameraBottomView {
+    
+    func makeVideoButton() -> UIButton {
+        let button = UIButton()
+        button.setImage(GalleryBundle.image("video")!, for: .normal)
+        return button
+    }
+    
     func makeCameraButton() -> UIButton {
         let button = UIButton()
         button.setImage(GalleryBundle.image("camera_button")!, for: .normal)
@@ -107,11 +166,12 @@ private extension CameraBottomView {
 private extension CameraBottomView {
     
     @objc
+    func buttonVideoTapped(_ sender: UIButton) {
+        didTapCaptureVideo?(sender)
+    }
+    
+    @objc
     func buttonCameraTapped(_ sender: UIButton) {
-        guard mode == .camera else {
-            didTapCaptureVideo?(sender)
-            return
-        }
         didTapCamera?(sender)
     }
     

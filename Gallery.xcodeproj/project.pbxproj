@@ -10,6 +10,7 @@
 		4E5822EE226ED9C200A72B7D /* TopView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E5822ED226ED9C200A72B7D /* TopView.swift */; };
 		4E5822F0226EE63700A72B7D /* BottomView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E5822EF226EE63700A72B7D /* BottomView.swift */; };
 		4E5822F2226F252500A72B7D /* VideoImagePreviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E5822F1226F252500A72B7D /* VideoImagePreviewView.swift */; };
+		4E7D90C2227044A500DD588A /* CameraManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E7D90C1227044A500DD588A /* CameraManager.swift */; };
 		4E90503B226C42DA0068304C /* ArdhiCameraController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E90503A226C42DA0068304C /* ArdhiCameraController.swift */; };
 		4E90503D226C43960068304C /* CameraBottomView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E90503C226C43960068304C /* CameraBottomView.swift */; };
 		D24CF7321E93D1FB002E6484 /* Gallery.bundle in Resources */ = {isa = PBXBuildFile; fileRef = D24CF7311E93D1FB002E6484 /* Gallery.bundle */; };
@@ -79,6 +80,7 @@
 		4E5822ED226ED9C200A72B7D /* TopView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TopView.swift; sourceTree = "<group>"; };
 		4E5822EF226EE63700A72B7D /* BottomView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BottomView.swift; sourceTree = "<group>"; };
 		4E5822F1226F252500A72B7D /* VideoImagePreviewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoImagePreviewView.swift; sourceTree = "<group>"; };
+		4E7D90C1227044A500DD588A /* CameraManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraManager.swift; sourceTree = "<group>"; };
 		4E90503A226C42DA0068304C /* ArdhiCameraController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArdhiCameraController.swift; sourceTree = "<group>"; };
 		4E90503C226C43960068304C /* CameraBottomView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraBottomView.swift; sourceTree = "<group>"; };
 		D24CF7311E93D1FB002E6484 /* Gallery.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = Gallery.bundle; sourceTree = "<group>"; };
@@ -295,6 +297,7 @@
 				4E5822ED226ED9C200A72B7D /* TopView.swift */,
 				4E5822EF226EE63700A72B7D /* BottomView.swift */,
 				4E5822F1226F252500A72B7D /* VideoImagePreviewView.swift */,
+				4E7D90C1227044A500DD588A /* CameraManager.swift */,
 			);
 			path = Gallery;
 			sourceTree = "<group>";
@@ -507,6 +510,7 @@
 				D2D1A6D71F84F4DB0083D4C5 /* UIImageView+Extensions.swift in Sources */,
 				D2D1A6F91F84F4DB0083D4C5 /* VideosLibrary.swift in Sources */,
 				4E5822F2226F252500A72B7D /* VideoImagePreviewView.swift in Sources */,
+				4E7D90C2227044A500DD588A /* CameraManager.swift in Sources */,
 				D2D1A6DF1F84F4DB0083D4C5 /* PageIndicator.swift in Sources */,
 				D2D1A6D11F84F4DB0083D4C5 /* Constraints.swift in Sources */,
 				D2D1A6DD1F84F4DB0083D4C5 /* LocationManager.swift in Sources */,
@@ -595,7 +599,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
@@ -649,7 +653,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
 				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
@@ -674,7 +678,7 @@
 				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
 				INFOPLIST_FILE = "$(SRCROOT)/Gallery/Info-iOS.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "no.hyper.Gallery-iOS";
 				PRODUCT_NAME = Gallery;
@@ -696,7 +700,7 @@
 				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
 				INFOPLIST_FILE = "$(SRCROOT)/Gallery/Info-iOS.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "no.hyper.Gallery-iOS";
 				PRODUCT_NAME = Gallery;

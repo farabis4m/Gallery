@@ -60,12 +60,6 @@ open class GalleryController: UIViewController {
         return controller
     }()
     
-    private lazy var videoController: ArdhiCameraController = {
-        let controller = ArdhiCameraController(cart: cart)
-        controller.mediaType = .video
-        return controller
-    }()
-    
     // MARK: - Life cycle
 
     open override func viewDidLoad() {
@@ -75,7 +69,7 @@ open class GalleryController: UIViewController {
         setupViews()
         setupActions()
         updateTopAndPreviewView()
-        self.cameraController.mediaType = .camera
+//        self.cameraController.mediaType = .camera
         addChildController(cameraController)
         
         previewImageView.didTapVideo = { [weak self] url in
@@ -198,7 +192,7 @@ private extension GalleryController {
         }
         
         bottomView.didTapRight = { [unowned self] in
-            self.addChildController(self.videoController)
+            self.addChildController(self.cameraController)
         }
         
         topView.didTapRight = {
@@ -209,7 +203,7 @@ private extension GalleryController {
             switch  self.galleryMode {
             case .cameraSelected:
                 self.galleryMode = .cameraUnselected
-                self.cameraController.viewBottom.mode = .enabled
+//                self.cameraController.viewBottom.mode = .enabled
             case .cameraUnselected, .photoLibrarySelected, .photoLibraryUnselected: EventHub.shared.close?()
             }
         }

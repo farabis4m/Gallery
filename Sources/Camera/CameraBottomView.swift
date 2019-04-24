@@ -106,7 +106,9 @@ class CameraBottomView: UIView {
         buttonCamera.g_pin(size: CGSize(width: 66, height: 66))
         
         addSubview(buttonVideo)
-        buttonVideo.g_pinCenter()
+//        buttonVideo.g_pinCenter()
+        buttonVideo.g_pin(on: .left, constant: 80)
+        buttonVideo.g_pin(on: .centerY)
         buttonVideo.g_pin(size: CGSize(width: 66, height: 66))
         
         addSubview(buttonFlash)
@@ -131,8 +133,8 @@ class CameraBottomView: UIView {
 private extension CameraBottomView {
     
     private func updateMode() {
-        buttonCamera.isHidden = mediaType == .video
-        buttonVideo.isHidden = mediaType == .camera
+//        buttonCamera.isHidden = mediaType == .video
+//        buttonVideo.isHidden = mediaType == .camera
     }
 }
 

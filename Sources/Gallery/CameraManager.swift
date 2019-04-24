@@ -113,7 +113,7 @@ private extension CameraManager {
     func setupPreview() {
         // Configure previewLayer
         previewLayer = AVCaptureVideoPreviewLayer(session: captureSession)
-        previewLayer?.frame = viewPreview.bounds
+        previewLayer?.frame = viewPreview.layer.bounds
         previewLayer?.videoGravity = AVLayerVideoGravity.resizeAspectFill
         if let layer = previewLayer {
             viewPreview.layer.addSublayer(layer)

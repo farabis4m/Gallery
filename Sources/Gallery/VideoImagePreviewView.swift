@@ -32,7 +32,6 @@ class VideoImagePreviewView: UIView {
         setup()
     }
     
-    
     private func setup() {
         addSubview(imageView)
         imageView.g_pin(on: .left)
@@ -62,7 +61,8 @@ class VideoImagePreviewView: UIView {
             imageView.image = image
             buttonVideoPreview.isHidden = true
         case .video(let url):
-            print(url.absoluteString)
+            imageView.layoutIfNeeded()
+            imageView.g_loadImage(url)
             buttonVideoPreview.isHidden = false
         }
     }
@@ -82,7 +82,8 @@ private extension VideoImagePreviewView {
     
     func makeImageView() -> UIImageView {
         let imageView = UIImageView()
-        imageView.contentMode = .scaleToFill
+        imageView.contentMode = .scaleAspectFill
+        imageView.clipsToBounds = true
         return imageView
     }
 }

@@ -113,6 +113,7 @@ extension ArdhiCameraController: PageAware {
         
         manager?.photoCaptureCompletionBlock = { [weak self] image, error in
             guard let image = image else { return }
+            self?.cart.reset()
             self?.cart.image = image
             EventHub.shared.capturedImage?()
         }
@@ -121,6 +122,7 @@ extension ArdhiCameraController: PageAware {
         }
         manager?.videoCaptureCompletionBlock = { [weak self] url, error in
             guard let url = url else { return }
+            self?.cart.reset()
             self?.cart.url = url
             EventHub.shared.capturedVideo?()
         }

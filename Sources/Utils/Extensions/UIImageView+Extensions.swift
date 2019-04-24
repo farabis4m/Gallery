@@ -28,4 +28,21 @@ extension UIImageView {
     
     tag = Int(id)
   }
+    
+    func g_loadImage(_ url: URL) {
+        DispatchQueue.global().async {
+            let asset = AVAsset(url: url)
+            let assetImgGenerate : AVAssetImageGenerator = AVAssetImageGenerator(asset: asset)
+            assetImgGenerate.appliesPreferredTrackTransform = true
+            let time = CMTimeMake(value: 1, timescale: 2)
+            let img = try? assetImgGenerate.copyCGImage(at: time, actualTime: nil)
+            if img != nil {
+                let frameImg  = UIImage(cgImage: img!)
+                DispatchQueue.main.async(execute: { [weak self]  in
+                    self?.image = frameImg
+                })
+            }
+        }
+    }
+    
 }

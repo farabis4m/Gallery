@@ -111,16 +111,16 @@ extension ArdhiCameraController: PageAware {
     func pageDidShow() {
         manager = CameraManager(previewView: viewPreview)
         
-        manager?.photoCaptureCompletionBlock = { [weak self] image, error in
+        manager?.didCapturedPhoto = { [weak self] image, error in
             guard let image = image else { return }
             self?.cart.reset()
             self?.cart.image = image
             EventHub.shared.capturedImage?()
         }
-        manager?.videoCaptureStartedBlock = {
+        manager?.didStartedVideoCapturing = {
             print("started video capture")
         }
-        manager?.videoCaptureCompletionBlock = { [weak self] url, error in
+        manager?.didCapturedVideo = { [weak self] url, error in
             guard let url = url else { return }
             self?.cart.reset()
             self?.cart.url = url

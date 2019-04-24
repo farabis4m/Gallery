@@ -31,7 +31,7 @@ class CameraBottomView: UIView {
         var videoImage: UIImage {
             switch self {
             case .enabled: return GalleryBundle.image("video")!
-            case .disabled: return GalleryBundle.image("camera_disabled")!
+            case .disabled: return GalleryBundle.image("video")!
             }
         }
         
@@ -54,10 +54,8 @@ class CameraBottomView: UIView {
         buttonVideo.setImage(mode.videoImage, for: .normal)
         buttonFlash.setImage(mode.flashImage, for: .normal)
         buttonToggleCamera.setImage(mode.selfie, for: .normal)
-        
-        [buttonCamera, buttonVideo, buttonFlash].forEach { $0.isUserInteractionEnabled = mode == .enabled }
+        [buttonCamera, buttonFlash, buttonToggleCamera].forEach { $0.isUserInteractionEnabled = mode == .enabled }
     }
-    
     
     typealias ButtonActionHandler = (UIButton) -> ()
     
@@ -133,8 +131,8 @@ class CameraBottomView: UIView {
 private extension CameraBottomView {
     
     private func updateMode() {
-//        buttonCamera.isHidden = mediaType == .video
-//        buttonVideo.isHidden = mediaType == .camera
+        buttonCamera.isHidden = mediaType == .video
+        buttonVideo.isHidden = mediaType == .camera
     }
 }
 

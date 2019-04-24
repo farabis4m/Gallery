@@ -13,15 +13,14 @@ import AVKit
 class CameraManager: NSObject {
     
     typealias PhotoCaptureCompletionBlock = ((UIImage?, Error?) -> Void)
-    var photoCaptureCompletionBlock: PhotoCaptureCompletionBlock?
+    var didCapturedPhoto: PhotoCaptureCompletionBlock?
+    
+    typealias VideoCaptureStartedBlock = (() -> Void)
+    var didStartedVideoCapturing: VideoCaptureStartedBlock?
     
     typealias VideoCaptureCompletionBlock = ((URL?, Error?) -> Void)
-    var videoCaptureCompletionBlock: VideoCaptureCompletionBlock?
+    var didCapturedVideo: VideoCaptureCompletionBlock?
 
-    typealias VideoCaptureStartedBlock = (() -> Void)
-    var videoCaptureStartedBlock: VideoCaptureStartedBlock?
-
-    
     private var tempFilePath: URL = {
         let paths = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)
         let documentsDirectory = paths[0] as String
@@ -202,23 +201,23 @@ private extension CameraManager {
 extension CameraManager: AVCaptureFileOutputRecordingDelegate, AVCapturePhotoCaptureDelegate {
     
     func fileOutput(_ output: AVCaptureFileOutput, didStartRecordingTo fileURL: URL, from connections: [AVCaptureConnection]) {
-        videoCaptureStartedBlock?()
+        didStartedVideoCapturing?()
     }
     
     func fileOutput(_ output: AVCaptureFileOutput, didFinishRecordingTo outputFileURL: URL, from connections: [AVCaptureConnection], error: Error?) {
         guard error == nil else {
-            videoCaptureCompletionBlock?(nil, error)
+            didCapturedVideo?(nil, error)
             return
         }
-        videoCaptureCompletionBlock?(outputFileURL, nil)
+        didCapturedVideo?(outputFileURL, nil)
     }
     
     func photoOutput(_ output: AVCapturePhotoOutput, didFinishProcessingPhoto photo: AVCapturePhoto, error: Error?) {
         guard let imageData = photo.fileDataRepresentation() , let image = UIImage(data: imageData) else {
-            photoCaptureCompletionBlock?(nil, error)
+            didCapturedPhoto?(nil, error)
             return
         }
-        photoCaptureCompletionBlock?(image, nil)
+        didCapturedPhoto?(image, nil)
     }
 }
 

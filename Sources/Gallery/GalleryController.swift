@@ -69,8 +69,10 @@ open class GalleryController: UIViewController {
         setupViews()
         setupActions()
         updateTopAndPreviewView()
-//        self.cameraController.mediaType = .camera
+        self.cameraController.mediaType = .camera
         addChildController(cameraController)
+        
+        containerView.backgroundColor = .black
         
         previewImageView.didTapVideo = { [weak self] url in
             let player = AVPlayer(url: url)
@@ -187,11 +189,13 @@ private extension GalleryController {
             self.addChildController(self.imageController)
         }
         
-        bottomView.didTapCenter = {
+        bottomView.didTapCenter = { [unowned self] in 
+            self.cameraController.mediaType = .camera
             self.addChildController(self.cameraController)
         }
         
         bottomView.didTapRight = { [unowned self] in
+            self.cameraController.mediaType = .video
             self.addChildController(self.cameraController)
         }
         
@@ -203,8 +207,8 @@ private extension GalleryController {
             switch  self.galleryMode {
             case .cameraSelected:
                 self.galleryMode = .cameraUnselected
-//                self.cameraController.viewBottom.mode = .enabled
-            case .cameraUnselected, .photoLibrarySelected, .photoLibraryUnselected: EventHub.shared.close?()
+                self.cameraController.viewBottom.mode = .enabled
+                case .cameraUnselected, .photoLibrarySelected, .photoLibraryUnselected: EventHub.shared.close?()
             }
         }
     }

@@ -12,6 +12,34 @@ import AVKit
 
 class CameraManager: NSObject {
     
+    var isFlashEnabled = false {
+        didSet {
+            guard cameraPosition == .back, let input = activeInput else { return }
+            setTorchMode(isFlashEnabled ? .on : .off, for: input.device)
+        }
+    }
+    
+    var isFlashAvailable: ((Bool) -> ())?
+    
+    var cameraPosition: CameraPosition = .back {
+        didSet {
+            switchCamera()
+        }
+    }
+    
+    func switchCamera() {
+        captureSession.beginConfiguration()
+        guard let input = AVCaptureDevice.default(.builtInWideAngleCamera, for: .video, position: cameraPosition.position),
+            let newInput = try? AVCaptureDeviceInput(device: input) else { return }
+        captureSession.inputs.forEach { captureSession.removeInput($0) }
+        
+        if captureSession.canAddInput(newInput) {
+            captureSession.addInput(newInput)
+            activeInput = newInput
+        }
+        captureSession.commitConfiguration()
+    }
+    
     typealias PhotoCaptureCompletionBlock = ((UIImage?, Error?) -> Void)
     var didCapturedPhoto: PhotoCaptureCompletionBlock?
     
@@ -31,26 +59,38 @@ class CameraManager: NSObject {
         return URL(fileURLWithPath: filePath)
     }()
     
+    private var activeInput: AVCaptureDeviceInput? {
+        didSet {
+            updatedDevice()
+        }
+    }
+    
     private let captureSession = AVCaptureSession()
     private let movieOutput = AVCaptureMovieFileOutput()
-    private var activeInput: AVCaptureDeviceInput?
+   
     private var cameraOutput: AVCapturePhotoOutput?
     private var previewLayer: AVCaptureVideoPreviewLayer?
-    
     private var viewPreview: UIView
     
+    func updatedDevice() {
+        guard let activeDevice = activeInput?.device else { return }
+        switch cameraPosition {
+        case .front: isFlashAvailable?(activeDevice.isFlashAvailable)
+        case .back: isFlashAvailable?(activeDevice.isTorchModeSupported(.on))
+        }
+    }
     
-    init(previewView: UIView) {
+    init(previewView: UIView, position: CameraPosition = .back) {
         self.viewPreview = previewView
+        self.cameraPosition = position
         super.init()
         initiateCamera()
     }
     
     func updateFrame() {
-        previewLayer?.frame = viewPreview.bounds
+        previewLayer?.frame = viewPreview.layer.bounds
     }
 }
-
 
 // Initiating camera
 private extension CameraManager {
@@ -67,7 +107,7 @@ private extension CameraManager {
         captureSession.sessionPreset = AVCaptureSession.Preset.high
         
         // Setup Camera
-        guard let camera = AVCaptureDevice.default(.builtInWideAngleCamera, for: .video, position: .back) else { return  false }
+        guard let camera = AVCaptureDevice.default(.builtInWideAngleCamera, for: .video, position: cameraPosition.position) else { return  false }
         
         do {
             
@@ -112,10 +152,12 @@ private extension CameraManager {
     func setupPreview() {
         // Configure previewLayer
         previewLayer = AVCaptureVideoPreviewLayer(session: captureSession)
-        previewLayer?.frame = viewPreview.layer.bounds
-        previewLayer?.videoGravity = AVLayerVideoGravity.resizeAspectFill
-        if let layer = previewLayer {
-            viewPreview.layer.addSublayer(layer)
+        DispatchQueue.main.async {
+            self.previewLayer?.frame = self.viewPreview.layer.bounds
+            self.previewLayer?.videoGravity = AVLayerVideoGravity.resizeAspectFill
+            if let layer = self.previewLayer {
+                self.viewPreview.layer.addSublayer(layer)
+            }
         }
     }
     
@@ -149,6 +191,20 @@ private extension CameraManager {
         return orientation
     }
     
+    func setTorchMode(_ torchMode: AVCaptureDevice.TorchMode, for device: AVCaptureDevice) {
+        if device.isTorchModeSupported(torchMode) && device.torchMode != torchMode {
+            do
+            {
+                try device.lockForConfiguration()
+                device.torchMode = torchMode
+                device.unlockForConfiguration()
+            }
+            catch {
+                print("Error:-\(error)")
+            }
+        }
+    }
+    
 }
 
 private extension CameraManager {
@@ -163,21 +219,7 @@ private extension CameraManager {
         if (connection?.isVideoStabilizationSupported)! {
             connection?.preferredVideoStabilizationMode = AVCaptureVideoStabilizationMode.auto
         }
-        
-        guard let device = activeInput?.device else { return }
-        
-        if (device.isSmoothAutoFocusSupported) {
-            
-            do {
-                try device.lockForConfiguration()
-                device.isSmoothAutoFocusEnabled = false
-                device.unlockForConfiguration()
-            } catch {
-                print("Error setting configuration: \(error)")
-            }
-            
-        }
-        
+
         movieOutput.startRecording(to: tempFilePath, recordingDelegate: self)
     }
     
@@ -190,6 +232,12 @@ private extension CameraManager {
     func takePhoto() {
         let photoSettings = AVCapturePhotoSettings()
         photoSettings.isHighResolutionPhotoEnabled = false
+        
+        if let input = activeInput, input.device.hasFlash, isFlashEnabled {
+            photoSettings.flashMode = .on
+        } else {
+            photoSettings.flashMode = .off
+        }
         
         if let firstAvailablePreviewPhotoPixelFormatTypes = photoSettings.availablePreviewPhotoPixelFormatTypes.first {
             photoSettings.previewPhotoFormat = [kCVPixelBufferPixelFormatTypeKey as String: firstAvailablePreviewPhotoPixelFormatTypes]
@@ -213,11 +261,44 @@ extension CameraManager: AVCaptureFileOutputRecordingDelegate, AVCapturePhotoCap
     }
     
     func photoOutput(_ output: AVCapturePhotoOutput, didFinishProcessingPhoto photo: AVCapturePhoto, error: Error?) {
-        guard let imageData = photo.fileDataRepresentation() , let image = UIImage(data: imageData) else {
+        
+        guard let imageData = photo.fileDataRepresentation() , let image = UIImage(data: imageData), let previewLayer = previewLayer ,let img = cropCameraImage(original: image, previewLayer: previewLayer) else {
             didCapturedPhoto?(nil, error)
             return
         }
-        didCapturedPhoto?(image, nil)
+        didCapturedPhoto?(img, nil)
+    }
+    
+    
+    func cropCameraImage(original: UIImage, previewLayer: AVCaptureVideoPreviewLayer) -> UIImage? {
+        
+        var image = UIImage()
+        
+        let previewImageLayerBounds = previewLayer.bounds
+        
+        let originalWidth = original.size.width
+        let originalHeight = original.size.height
+        
+        let A = previewImageLayerBounds.origin
+        let B = CGPoint(x: previewImageLayerBounds.size.width, y: previewImageLayerBounds.origin.y)
+        let D = CGPoint(x: previewImageLayerBounds.size.width, y: previewImageLayerBounds.size.height)
+        
+        let a = previewLayer.captureDevicePointConverted(fromLayerPoint: A)
+        let b = previewLayer.captureDevicePointConverted(fromLayerPoint: B)
+        let d = previewLayer.captureDevicePointConverted(fromLayerPoint: D)
+        
+        let posX = floor(b.x * originalHeight)
+        let posY = floor(b.y * originalWidth)
+        
+        let width: CGFloat = d.x * originalHeight - b.x * originalHeight
+        let height: CGFloat = a.y * originalWidth - b.y * originalWidth
+        
+        let cropRect = CGRect(x: posX, y: posY, width: width, height: height)
+        
+        if let imageRef = original.cgImage?.cropping(to: cropRect) {
+            image = UIImage(cgImage: imageRef, scale: 0.5, orientation: cameraPosition == .back ? .right : .leftMirrored)
+        }
+        return image
     }
 }
 
@@ -230,9 +311,33 @@ extension CameraManager {
     
     func captureVideo() {
         guard !movieOutput.isRecording else {
-            stopVideoRecording()
+            stop()
             return
         }
         startVideoRecording()
+    }
+    
+    func stop() {
+        stopVideoRecording()
+    }
+}
+
+extension CameraManager {
+    enum CameraPosition {
+        case back, front
+        
+        mutating func toggle() {
+            switch self {
+            case .back: self = .front
+            case .front: self = .back
+            }
+        }
+        
+        var position: AVCaptureDevice.Position {
+            switch self {
+            case .back: return .back
+            case .front: return .front
+            }
+        }
     }
 }

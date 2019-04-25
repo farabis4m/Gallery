@@ -10,9 +10,22 @@ import UIKit
 
 class CameraBottomView: UIView {
     
+    var shouldHideFlashButton: Bool = false {
+        didSet {
+            buttonFlash.isHidden = shouldHideFlashButton
+        }
+    }
+    
     enum Mode {
         case enabled
         case disabled
+        
+        var selectedFlashImage: UIImage {
+            switch self {
+            case .enabled: return GalleryBundle.image("camera_button")!
+            case .disabled: return GalleryBundle.image("flashdisabled")!
+            }
+        }
         
         var flashImage: UIImage {
             switch self {
@@ -53,6 +66,7 @@ class CameraBottomView: UIView {
         buttonCamera.setImage(mode.cameraImage, for: .normal)
         buttonVideo.setImage(mode.videoImage, for: .normal)
         buttonFlash.setImage(mode.flashImage, for: .normal)
+        buttonFlash.setImage(mode.selectedFlashImage, for: .selected)
         buttonToggleCamera.setImage(mode.selfie, for: .normal)
         [buttonCamera, buttonFlash, buttonToggleCamera].forEach { $0.isUserInteractionEnabled = mode == .enabled }
     }
@@ -104,10 +118,7 @@ class CameraBottomView: UIView {
         buttonCamera.g_pin(size: CGSize(width: 66, height: 66))
         
         addSubview(buttonVideo)
-//        buttonVideo.g_pinCenter()
-        buttonVideo.g_pin(on: .left, constant: 80)
-        buttonVideo.g_pin(on: .centerY)
-        buttonVideo.g_pin(size: CGSize(width: 66, height: 66))
+        buttonVideo.g_pinCenter()
         
         addSubview(buttonFlash)
         buttonFlash.g_pin(on: .left, constant: 16)
@@ -124,7 +135,7 @@ class CameraBottomView: UIView {
         buttonToggleCamera.addTarget(self, action: #selector(buttonToggleCameraTapped(_:)), for: .touchUpInside)
         buttonVideo.addTarget(self, action: #selector(buttonVideoTapped(_:)), for: .touchUpInside)
         buttonCamera.addTarget(self, action: #selector(buttonCameraTapped(_:)), for: .touchUpInside)
-        buttonFlash.addTarget(self, action: #selector(buttonCameraTapped(_:)), for: .touchUpInside)
+        buttonFlash.addTarget(self, action: #selector(buttonFlashTapped(_:)), for: .touchUpInside)
     }
 }
 
@@ -153,6 +164,7 @@ private extension CameraBottomView {
     func makeFlashButton() -> UIButton {
         let button = UIButton()
         button.setImage(GalleryBundle.image("flash_auto")!, for: .normal)
+        button.setImage(GalleryBundle.image("camera_button")!, for: .selected)
         return button
     }
     

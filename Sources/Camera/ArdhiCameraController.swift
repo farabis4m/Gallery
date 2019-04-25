@@ -42,6 +42,17 @@ class ArdhiCameraController: UIViewController {
         super.viewDidLoad()
         setupViews()
         setupActions()
+        DispatchQueue.global().async {
+            self.setupCameraManager()
+            DispatchQueue.main.async { [weak self] in
+                self?.setupCameraManagerActions()
+            }
+        }
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        manager?.stop()
     }
     
     override func viewDidLayoutSubviews() {
@@ -90,10 +101,14 @@ private extension ArdhiCameraController {
     func setupActions() {
         
         viewBottom.didTapbuttonFlash = { [unowned self] sender in
-            print("flash tappeed")
+            print(sender.isSelected)
+            sender.isSelected = !sender.isSelected
+            print(sender.isSelected)
+            self.manager?.isFlashEnabled = sender.isSelected
         }
         
         viewBottom.didTapCamera = { [unowned self] sender in
+            self.viewBottom.mode = .disabled
             self.manager?.capturePhoto()
         }
         
@@ -102,15 +117,21 @@ private extension ArdhiCameraController {
         }
         
         viewBottom.didTapToggleCamera = { [unowned self] sender in
-            print("toggle tapped")
+            self.manager?.cameraPosition.toggle()
         }
     }
 }
 
 extension ArdhiCameraController: PageAware {
     func pageDidShow() {
+       
+    }
+    
+    func setupCameraManager() {
         manager = CameraManager(previewView: viewPreview)
-        
+    }
+    
+    func setupCameraManagerActions() {
         manager?.didCapturedPhoto = { [weak self] image, error in
             guard let image = image else { return }
             self?.cart.reset()
@@ -121,10 +142,15 @@ extension ArdhiCameraController: PageAware {
             print("started video capture")
         }
         manager?.didCapturedVideo = { [weak self] url, error in
-            guard let url = url else { return }
-            self?.cart.reset()
-            self?.cart.url = url
+            guard let welf = self, let url = url, welf.mediaType == .video else { return }
+            welf.cart.reset()
+            welf.cart.url = url
             EventHub.shared.capturedVideo?()
+        }
+        
+        manager?.isFlashAvailable = { [weak self] flashAvailable in
+            guard let welf = self else { return }
+            welf.viewBottom.shouldHideFlashButton = !flashAvailable
         }
     }
 }

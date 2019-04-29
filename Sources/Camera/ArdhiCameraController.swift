@@ -126,7 +126,6 @@ private extension ArdhiCameraController {
         }
         
         viewBottom.didTapCamera = { [unowned self] sender in
-            self.viewBottom.mode = .disabled
             self.manager?.capturePhoto()
         }
         

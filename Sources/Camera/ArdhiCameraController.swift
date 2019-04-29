@@ -31,6 +31,7 @@ class ArdhiCameraController: UIViewController {
     var mediaType: MediaType = .camera {
         didSet {
             viewBottom.mediaType = mediaType
+            manager?.mediaType = mediaType
         }
     }
 
@@ -42,6 +43,21 @@ class ArdhiCameraController: UIViewController {
         super.viewDidLoad()
         setupViews()
         setupActions()
+        
+        if Permission.Camera.status != .authorized {
+            Permission.Camera.request { [weak self] in
+                guard Permission.Camera.status == .authorized else {
+                    Alert.shared.show(from: self, mode: .camera)
+                    return
+                }
+                self?.setupCamera()
+            }
+        } else {
+            setupCamera()
+        }
+    }
+    
+    func setupCamera() {
         DispatchQueue.global().async {
             self.setupCameraManager()
             DispatchQueue.main.async { [weak self] in
@@ -49,6 +65,8 @@ class ArdhiCameraController: UIViewController {
             }
         }
     }
+    
+    
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
@@ -123,9 +141,7 @@ private extension ArdhiCameraController {
 }
 
 extension ArdhiCameraController: PageAware {
-    func pageDidShow() {
-       
-    }
+    func pageDidShow() { }
     
     func setupCameraManager() {
         manager = CameraManager(previewView: viewPreview)
@@ -138,8 +154,8 @@ extension ArdhiCameraController: PageAware {
             self?.cart.image = image
             EventHub.shared.capturedImage?()
         }
-        manager?.didStartedVideoCapturing = {
-            print("started video capture")
+        manager?.didStartedVideoCapturing = { [weak self] in
+            self?.viewBottom.mode = .disabled
         }
         manager?.didCapturedVideo = { [weak self] url, error in
             guard let welf = self, let url = url, welf.mediaType == .video else { return }

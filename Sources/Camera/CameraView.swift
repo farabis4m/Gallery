@@ -152,14 +152,6 @@ class CameraView: UIView, UIGestureRecognizerDelegate {
     })
   }
 
-  // MARK: - UIGestureRecognizerDelegate
-//  override func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
-//    let point = gestureRecognizer.location(in: self)
-//
-//    return point.y > closeButton.frame.maxY
-//      && point.y < bottomContainer.frame.origin.y
-//  }
-
   // MARK: - Controls
 
   func makeCloseButton() -> UIButton {

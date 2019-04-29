@@ -47,7 +47,12 @@ class TopView: UIView {
         let button = UIButton()
         button.setTitleColor(UIColor.white, for: .normal)
         button.translatesAutoresizingMaskIntoConstraints = false
-        button.setTitle("left", for: .normal)
+        if let font = GalleryConfig.shared.topCloseFont {
+            button.titleLabel?.font = font
+        }
+        if let color = GalleryConfig.shared.buttonLeftColor {
+            button.setTitleColor(color, for: .normal)
+        }
         return button
     }
     
@@ -55,14 +60,24 @@ class TopView: UIView {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
         label.textColor = UIColor.white
-        label.text = "title"
+        if let font = GalleryConfig.shared.topTitleFont {
+            label.font = font
+        }
+        if let color = GalleryConfig.shared.titleColor {
+            label.textColor = color
+        }
         return label
     }
     
     private func makeButtonRight() -> UIButton {
         let button = UIButton()
         button.setTitleColor(UIColor.white, for: .normal)
-        button.setTitle("right", for: .normal)
+        if let font = GalleryConfig.shared.topSaveFont {
+            button.titleLabel?.font = font
+        }
+        if let color = GalleryConfig.shared.buttonRightColor {
+            button.setTitleColor(color, for: .normal)
+        }
         button.translatesAutoresizingMaskIntoConstraints = false
         return button
     }
@@ -78,6 +93,11 @@ class TopView: UIView {
     }
     
     private func commonInit() {
+        translatesAutoresizingMaskIntoConstraints = false
+        heightAnchor.constraint(equalToConstant: 52).isActive = true
+        
+        backgroundColor = UIColor.black
+        
         setup()
         updateTopView()
     }
@@ -85,7 +105,7 @@ class TopView: UIView {
     private func setup() {
         addSubview(buttonLeft)
         
-        backgroundColor = .red
+        backgroundColor = GalleryConfig.shared.topviewBackgroundColor ?? .black
         
         NSLayoutConstraint.activate([
             buttonLeft.leadingAnchor.constraint(equalTo: leadingAnchor, constant: padding),
@@ -125,6 +145,7 @@ class TopView: UIView {
 }
 
 enum GalleryMode {
+    
     case photoLibraryUnselected
     case photoLibrarySelected
     case cameraUnselected
@@ -132,13 +153,15 @@ enum GalleryMode {
     
     var leftTitle: String {
         switch self {
-        case .photoLibraryUnselected, .cameraUnselected, .photoLibrarySelected: return "Close"
-        case .cameraSelected: return "Retake"
+        case .photoLibraryUnselected, .cameraUnselected, .photoLibrarySelected:
+            return "gallery.top.close".g_localize(fallback: "close")
+        case .cameraSelected:
+            return "gallery.top.retake".g_localize(fallback: "retake")
         }
     }
     
     var rightTitle: String {
-        return "Save"
+        return "gallery.top.save".g_localize(fallback: "save")
     }
     
     var shouldHideButtonRight: Bool {
@@ -149,7 +172,7 @@ enum GalleryMode {
     }
     
     var title: String {
-        return "Add Media"
+        return "gallery.top.addmedia".g_localize(fallback: "add_media")
     }
     
     var shouldShowPreviewScreen: Bool {
@@ -158,4 +181,58 @@ enum GalleryMode {
         case .photoLibrarySelected, .photoLibraryUnselected, .cameraUnselected: return false
         }
     }
+}
+
+public struct GalleryConfig {
+    
+    public static var shared = GalleryConfig()
+    
+    private init() { }
+    
+    // Top View
+    
+    // colors
+    
+    public var topviewBackgroundColor: UIColor?
+    
+    public var buttonLeftColor: UIColor?
+    
+    public var titleColor: UIColor?
+    
+    public var buttonRightColor: UIColor?
+    
+    
+    
+    public var topCloseFont: UIFont?
+    
+    public var topTitleFont: UIFont?
+    
+    public var topSaveFont: UIFont?
+    
+    public var bottomSelectedFont: UIFont?
+    
+    public var bottomUnselectedFont: UIFont?
+    
+    
+    // Bottom View
+    public var bottomFont: UIFont?
+    
+    
+    // photos controller
+    
+    public var selectedAlbumFont: UIFont?
+    public var albumTitleFont: UIFont?
+    public var albumCountFont: UIFont?
+    
+    public var selectedAlbumColor: UIColor?
+    public var albumTitleColor: UIColor?
+    public var albumCountColor: UIColor?
+    
+    
+    public var cropMode: CropMode = .square
+}
+
+public enum CropMode {
+    case square
+    case rectangle
 }

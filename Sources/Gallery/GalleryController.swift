@@ -3,6 +3,9 @@ import AVKit
 import AVFoundation
 
 public protocol GalleryControllerDelegate: class {
+    func galleryController(_ controller: GalleryController, didfinish withImage: UIImage)
+    
+    
     func galleryController(_ controller: GalleryController, didSelectImages images: [Image])
     func galleryController(_ controller: GalleryController, didSelectVideo video: Video)
     func galleryController(_ controller: GalleryController, requestLightbox images: [Image])
@@ -10,6 +13,13 @@ public protocol GalleryControllerDelegate: class {
 }
 
 open class GalleryController: UIViewController {
+    
+    var initialTab: Tabs = .library
+    
+    enum Tabs{
+        case library
+        case photo
+    }
     
     // MARK: - Init
     public required init() {
@@ -21,7 +31,7 @@ open class GalleryController: UIViewController {
     }
     
     open override var prefersStatusBarHidden : Bool {
-        return true
+        return false
     }
     
     public let cart = Cart()
@@ -32,21 +42,9 @@ open class GalleryController: UIViewController {
         }
     }
     
-    enum GalleryType{
-        case photoLibrary
-        case camera
-    }
-    
-    var galleryType: GalleryType = .camera
-    
     let containerView = UIView()
     let topView = TopView()
     let bottomView = BottomView()
-    
-    private lazy var previewImageView: VideoImagePreviewView = {
-        let view = VideoImagePreviewView(frame: .zero)
-        return view
-    }()
     
     public weak var delegate: GalleryControllerDelegate?
     
@@ -65,23 +63,19 @@ open class GalleryController: UIViewController {
     open override func viewDidLoad() {
         super.viewDidLoad()
         
+        view.backgroundColor = .black
+        
         setup()
         setupViews()
         setupActions()
         updateTopAndPreviewView()
         self.cameraController.mediaType = .camera
-        addChildController(cameraController)
-        
-        containerView.backgroundColor = .black
-        
-        previewImageView.didTapVideo = { [weak self] url in
-            let player = AVPlayer(url: url)
-            let vc = AVPlayerViewController()
-            vc.player = player
-            
-            self?.present(vc, animated: true) {
-                vc.player?.play()
-            }
+        if initialTab == .library {
+            addChildController(imageController)
+            bottomView.leftButton.isSelected = true
+        } else if initialTab == .photo {
+            addChildController(cameraController)
+            bottomView.centerButton.isSelected = true
         }
     }
 }
@@ -89,6 +83,11 @@ open class GalleryController: UIViewController {
 extension GalleryController {
     // MARK: - Setup
     func setup() {
+        
+        EventHub.shared.dismissPreview = {
+            self.topView.mode = .cameraUnselected
+        }
+        
         EventHub.shared.close = { [weak self] in
             if let strongSelf = self {
                 strongSelf.delegate?.galleryControllerDidCancel(strongSelf)
@@ -96,33 +95,36 @@ extension GalleryController {
         }
         
         EventHub.shared.capturedImage = { [weak self] in
-            guard let welf = self else { return }
-            guard let image = welf.cart.image else { return }
-            welf.previewImageView.media = VideoImagePreviewView.MediaType.image(image: image)
-            welf.galleryMode = .cameraSelected
+            guard let welf = self, let image = welf.cart.image, let delegate = welf.delegate else {
+                return
+            }
+            PreviewViewController.show(from: welf, cart: welf.cart, mode: .image(image: image), delegate: delegate)
         }
         
         EventHub.shared.capturedVideo = { [weak self] in
-            guard let welf = self, let url = welf.cart.url else { return }
-            welf.previewImageView.media = VideoImagePreviewView.MediaType.video(url: url)
-            welf.galleryMode = .cameraSelected
+            guard let welf = self, let url = welf.cart.url, let delegate = welf.delegate else { return }
+            PreviewViewController.show(from: welf, cart: welf.cart, mode: .video(video: url), delegate: delegate)
         }
         
         EventHub.shared.doneWithImages = { [weak self] in
-            if let strongSelf = self {
-                strongSelf.delegate?.galleryController(strongSelf, didSelectImages: strongSelf.cart.images)
-            }
+            guard let welf = self, let img = welf.cart.images.first, let delegate = welf.delegate else { return }
+            PreviewViewController.show(from: welf, cart: welf.cart, mode: .libraryImage(asset: img.asset), delegate: delegate)
         }
         
         EventHub.shared.doneWithVideos = { [weak self] in
-            if let strongSelf = self, let video = strongSelf.cart.video {
-                strongSelf.delegate?.galleryController(strongSelf, didSelectVideo: video)
-            }
+            guard let welf = self, let video = welf.cart.video, let delegate = welf.delegate else { return }
+            PreviewViewController.show(from: welf, cart: welf.cart, mode: .lbraryVideo(asset: video.asset), delegate: delegate)
         }
         
         EventHub.shared.stackViewTouched = { [weak self] in
             if let strongSelf = self {
                 strongSelf.delegate?.galleryController(strongSelf, requestLightbox: strongSelf.cart.images)
+            }
+        }
+        
+        EventHub.shared.finishedWithImage = { [weak self] in
+            if let strongSelf = self, let image = strongSelf.cart.image {
+                strongSelf.delegate?.galleryController(strongSelf, didfinish: image)
             }
         }
     }
@@ -154,34 +156,27 @@ private extension GalleryController {
     func setupViews() {
         view.addSubview(topView)
         
-        topView.g_pin(on: .top)
+        let safeArea = view.safeAreaLayoutGuide
+        topView.topAnchor.constraint(equalTo: safeArea.topAnchor).isActive = true
         topView.g_pin(on: .left)
         topView.g_pin(on: .right)
-        topView.g_pin(height: 40)
         
         view.addSubview(bottomView)
         bottomView.g_pin(on: .left)
         bottomView.g_pin(on: .right)
-        bottomView.g_pin(on: .bottom)
-        bottomView.g_pin(height: 40)
+        bottomView.bottomAnchor.constraint(equalTo: safeArea.bottomAnchor).isActive = true
+        bottomView.g_pin(height: 44)
         
         view.addSubview(containerView)
         containerView.g_pin(on: .left)
         containerView.g_pin(on: .right)
         containerView.g_pin(on: .top, view: topView, on: .bottom)
         containerView.g_pin(on: .bottom, view: bottomView, on: .top)
-        
-        
-        view.addSubview(previewImageView)
-        previewImageView.g_pin(on: .top, view: topView, on: .bottom)
-        previewImageView.g_pin(on: .left)
-        previewImageView.g_pin(on: .right)
-        previewImageView.g_pin(on: .bottom, view: bottomView, on: .top)
     }
     
     func updateTopAndPreviewView() {
-        topView.mode = galleryMode
-        previewImageView.isHidden = !galleryMode.shouldShowPreviewScreen
+//        topView.mode = galleryMode
+//        previewImageView.isHidden = !galleryMode.shouldShowPreviewScreen
     }
     
     func setupActions() {
@@ -212,4 +207,8 @@ private extension GalleryController {
             }
         }
     }
+}
+
+extension UIColor {
+    static var bottomSeperatorColor: UIColor = UIColor(red: 74/255, green: 79/255, blue: 84/255, alpha: 1)
 }

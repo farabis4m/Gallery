@@ -12,9 +12,11 @@ import AVKit
 
 class CameraManager: NSObject {
     
+    var mediaType: ArdhiCameraController.MediaType = .camera
+    
     var isFlashEnabled = false {
         didSet {
-            guard cameraPosition == .back, let input = activeInput else { return }
+            guard cameraPosition == .back, let input = activeInput, mediaType == .video else { return }
             setTorchMode(isFlashEnabled ? .on : .off, for: input.device)
         }
     }

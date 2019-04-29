@@ -14,9 +14,9 @@ class BottomView: UIView {
     var didTapCenter: (() -> ())?
     var didTapRight: (() -> ())?
     
-    private lazy var leftButton = makeButton()
-    private lazy var centerButton = makeButton()
-    private lazy var rightButton = makeButton()
+    lazy var leftButton = makeButton()
+    lazy var centerButton = makeButton()
+    lazy var rightButton = makeButton()
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -25,28 +25,46 @@ class BottomView: UIView {
     
     private func setup() {
         
-        backgroundColor = .red
+        backgroundColor = .clear
         
-        [leftButton, centerButton, rightButton].forEach {
-            addSubview($0)
-            $0.g_pin(on: .centerY)
-        }
+        let stackView = UIStackView(arrangedSubviews: [leftButton, centerButton, rightButton])
+        stackView.axis = .horizontal
+        stackView.distribution = .equalCentering
+        addSubview(stackView)
+        
+        stackView.g_pin(on: .left, constant: 16)
+        stackView.g_pin(on: .right, constant: -16)
+        stackView.g_pin(on: .bottom)
+        stackView.g_pin(on: .top)
+        
+        leftButton.setTitle("gallery.bottom.library".g_localize(fallback: "lib"), for: .normal)
+        centerButton.setTitle("gallery.bottom.photo".g_localize(fallback: "pht"), for: .normal)
+        rightButton.setTitle("gallery.bottom.video".g_localize(fallback: "vid"), for: .normal)
         
         leftButton.tag = 0
         centerButton.tag = 1
         rightButton.tag = 2
         
-        leftButton.g_pin(on: .left, constant: 8)
-        centerButton.g_pin(on: .centerX, constant: 8)
-        rightButton.g_pin(on: .right, constant: -8)
+        rightButton.isUserInteractionEnabled = false
         
         [leftButton, centerButton, rightButton].forEach {
             $0.addTarget(self, action: #selector(buttonTapped(_:)), for: .touchUpInside)
         }
+        
+        let seperatorView = UIView()
+        seperatorView.backgroundColor = .bottomSeperatorColor
+        addSubview(seperatorView)
+        seperatorView.g_pin(on: .left)
+        seperatorView.g_pin(on: .top)
+        seperatorView.g_pin(on: .right)
+        seperatorView.g_pin(height: 1)
     }
     
     @objc
     private func buttonTapped(_ sender: UIButton) {
+        
+        [leftButton, centerButton, rightButton].forEach({ $0.isSelected = (sender.tag == $0.tag) })
+        
         switch sender.tag {
         case 0: didTapLeft?()
         case 1: didTapCenter?()
@@ -58,8 +76,11 @@ class BottomView: UIView {
     private func makeButton() -> UIButton {
         let button = UIButton()
         button.translatesAutoresizingMaskIntoConstraints = false
-        button.setTitleColor(UIColor.white, for: .normal)
-        button.setTitle("Test", for: .normal)
+        button.setTitleColor(UIColor.white.withAlphaComponent(0.4), for: .normal)
+        button.setTitleColor(UIColor.white, for: .selected)
+        if let font = GalleryConfig.shared.bottomFont {
+            button.titleLabel?.font = font
+        }
         return button
     }
     

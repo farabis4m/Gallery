@@ -22,7 +22,7 @@ class CameraBottomView: UIView {
         
         var selectedFlashImage: UIImage {
             switch self {
-            case .enabled: return GalleryBundle.image("camera_button")!
+            case .enabled: return GalleryBundle.image("flashon")!
             case .disabled: return GalleryBundle.image("flashdisabled")!
             }
         }
@@ -164,7 +164,7 @@ private extension CameraBottomView {
     func makeFlashButton() -> UIButton {
         let button = UIButton()
         button.setImage(GalleryBundle.image("flash_auto")!, for: .normal)
-        button.setImage(GalleryBundle.image("camera_button")!, for: .selected)
+        button.setImage(GalleryBundle.image("flashon")!, for: .selected)
         return button
     }
     

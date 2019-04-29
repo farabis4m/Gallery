@@ -32,8 +32,8 @@ class ImagesController: UIViewController {
         return view
     }()
     
-    var arrowButton: ArdhiArrowButton = {
-        let btn = ArdhiArrowButton()
+    var arrowButton: ArrowButton = {
+        let btn = ArrowButton()
         btn.backgroundColor = UIColor.clear
         btn.translatesAutoresizingMaskIntoConstraints = false
         return btn
@@ -84,8 +84,6 @@ class ImagesController: UIViewController {
     view.backgroundColor = UIColor.white
     view.addSubview(gridView)
 
-   
-
     gridView.bottomView.addSubview(stackView)
 
     gridView.g_pinEdges()
@@ -108,7 +106,12 @@ class ImagesController: UIViewController {
        toggleContainerView()
     }
     
+    var isExpanded: Bool = false
+    
     func toggleContainerView() {
+        isExpanded = !isExpanded
+        arrowButton.toggle(isExpanded)
+        gridView.isUserInteractionEnabled = !isExpanded
         containerviewHeightConstraint?.constant = containerviewHeightConstraint?.constant == 36 ? 378 : 36
         UIView.animate(withDuration: 0.25, delay: 0, options: UIView.AnimationOptions(), animations: {
             self.view.layoutIfNeeded()
@@ -168,7 +171,7 @@ class ImagesController: UIViewController {
   // MARK: - Logic
 
   func show(album: MediaAlbum) {
-    arrowButton.setTitle(album.title, for: .normal)
+    arrowButton.updateText(album.title ?? "")
     switch album.mode {
     case .image(let images):
         items = images
@@ -220,15 +223,27 @@ class ImagesController: UIViewController {
 extension ImagesController: PageAware {
 
   func pageDidShow() {
-    once.run {
-      library.reload { [weak self] in
-        guard let welf = self else { return }
-        welf.videoLibrary.reload {
-            welf.reloadLibraries()
+    if Permission.Photos.status != .authorized {
+        Permission.Photos.request { [weak self] in
+            guard Permission.Photos.status == .authorized else {
+                Alert.shared.show(from: self, mode: .library)
+                return
+            }
+            self?.reload()
         }
-      }
+    }
+
+    once.run {
+      reload()
     }
   }
+    
+    func reload() {
+        library.reload { [weak self] in
+            guard let welf = self else { return }
+            welf.reloadLibraries()
+        }
+    }
     
     func reloadLibraries() {
         gridView.loadingIndicator.stopAnimating()
@@ -260,7 +275,7 @@ extension ImagesController: DropdownControllerDelegate {
   }
     
     func updateTopView() {
-//        gridView.isButtonRightHidden = cart.images.count == 0 && cart.video == nil
+        
     }
 }
 
@@ -310,32 +325,14 @@ extension ImagesController: UICollectionViewDataSource, UICollectionViewDelegate
     }
 
   func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-    guard let item = items[(indexPath as NSIndexPath).item] as? Image else {
-        guard let item = items[(indexPath as NSIndexPath).item] as? Video else { return }
-        controllerMode = .video
-        configVideos(with: item)
-        return
-    }
-    controllerMode = .image
-    guard Config.Camera.imageLimit != 1 else {
-        if cart.images.contains(item) { cart.remove(item) } else {
-            if let item = cart.images.last { cart.remove(item) }
-            cart.add(item)
-        }
-        configureFrameViews()
-        return
-    }
     
-    
-    if cart.images.contains(item) {
-      cart.remove(item)
-    } else {
-      if Config.Camera.imageLimit == 0 || Config.Camera.imageLimit > cart.images.count{
-        cart.add(item)
-      }
+    if let item = items[indexPath.item] as? Image  {
+        cart.images = [item]
+        EventHub.shared.doneWithImages?()
+    } else if let item = items[indexPath.item] as? Video {
+        cart.video = item
+        EventHub.shared.doneWithVideos?()
     }
-
-    configureFrameViews()
   }
     
     func configVideos(with item: Video) {
@@ -386,5 +383,3 @@ extension ImagesController: UICollectionViewDataSource, UICollectionViewDelegate
     }
   }
 }
-
-class ArdhiArrowButton: UIButton { }

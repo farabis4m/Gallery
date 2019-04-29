@@ -38,6 +38,23 @@ class AlbumCell: UITableViewCell {
   // MARK: - Setup
 
   func setup() {
+    
+    if let titleFont = GalleryConfig.shared.albumTitleFont {
+        albumTitleLabel.font = titleFont
+    }
+    
+    if let countFont = GalleryConfig.shared.albumCountFont {
+        itemCountLabel.font = countFont
+    }
+    
+    if let color = GalleryConfig.shared.titleColor {
+        albumTitleLabel.textColor = color
+    }
+    
+    if let color = GalleryConfig.shared.albumCountColor {
+        itemCountLabel.textColor = color
+    }
+    
     [albumImageView, albumTitleLabel, itemCountLabel].forEach {
         addSubview($0)
     }
@@ -47,13 +64,14 @@ class AlbumCell: UITableViewCell {
     albumImageView.g_pin(on: .top, constant: 5)
     albumImageView.g_pin(on: .bottom, constant: -5)
     albumImageView.g_pin(on: .width, view: albumImageView, on: .height)
-
-    albumTitleLabel.g_pin(on: .left, view: albumImageView, on: .right, constant: 10)
-    albumTitleLabel.g_pin(on: .top, constant: 24)
-    albumTitleLabel.g_pin(on: .right, constant: -10)
-
-    itemCountLabel.g_pin(on: .left, view: albumImageView, on: .right, constant: 10)
-    itemCountLabel.g_pin(on: .top, view: albumTitleLabel, on: .bottom, constant: 6)
+    
+    let stackView = UIStackView(arrangedSubviews: [albumTitleLabel, itemCountLabel])
+    stackView.axis = .vertical
+    addSubview(stackView)
+    
+    stackView.g_pin(on: .left, view: albumImageView, on: .right, constant: 10)
+    stackView.g_pin(on: .centerY, view: albumImageView)
+    stackView.g_pin(on: .right, constant: 10)
     
     backgroundColor = UIColor.clear
     contentView.backgroundColor = .clear
@@ -74,15 +92,12 @@ class AlbumCell: UITableViewCell {
   private func makeAlbumTitleLabel() -> UILabel {
     let label = UILabel()
     label.numberOfLines = 1
-    label.textColor = UIColor.white
     label.font = Config.Font.Text.regular.withSize(14)
-
     return label
   }
 
   private func makeItemCountLabel() -> UILabel {
     let label = UILabel()
-    label.textColor = .white
     label.numberOfLines = 1
     label.font = Config.Font.Text.regular.withSize(10)
 

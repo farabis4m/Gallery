@@ -4,19 +4,15 @@ import AVFoundation
 
 public protocol GalleryControllerDelegate: class {
     func galleryController(_ controller: GalleryController, didfinish withImage: UIImage)
-    
-    
-    func galleryController(_ controller: GalleryController, didSelectImages images: [Image])
     func galleryController(_ controller: GalleryController, didSelectVideo video: Video)
-    func galleryController(_ controller: GalleryController, requestLightbox images: [Image])
     func galleryControllerDidCancel(_ controller: GalleryController)
 }
 
 open class GalleryController: UIViewController {
     
-    var initialTab: Tabs = .library
+    public var initialTab: Tabs = .library
     
-    enum Tabs{
+    public enum Tabs{
         case library
         case photo
     }
@@ -24,6 +20,7 @@ open class GalleryController: UIViewController {
     // MARK: - Init
     public required init() {
         super.init(nibName: nil, bundle: nil)
+        configureGallery()
     }
     
     public required init?(coder aDecoder: NSCoder) {
@@ -33,6 +30,8 @@ open class GalleryController: UIViewController {
     open override var prefersStatusBarHidden : Bool {
         return false
     }
+    
+    open func configureGallery() { }
     
     public let cart = Cart()
     
@@ -114,12 +113,6 @@ extension GalleryController {
         EventHub.shared.doneWithVideos = { [weak self] in
             guard let welf = self, let video = welf.cart.video, let delegate = welf.delegate else { return }
             PreviewViewController.show(from: welf, cart: welf.cart, mode: .lbraryVideo(asset: video.asset), delegate: delegate)
-        }
-        
-        EventHub.shared.stackViewTouched = { [weak self] in
-            if let strongSelf = self {
-                strongSelf.delegate?.galleryController(strongSelf, requestLightbox: strongSelf.cart.images)
-            }
         }
         
         EventHub.shared.finishedWithImage = { [weak self] in

@@ -124,7 +124,7 @@ private extension CameraManager {
             return false
         }
         
-        // Setup Microphone
+       /* // Setup Microphone
         let microphone = AVCaptureDevice.default(for: AVMediaType.audio)!
         
         do {
@@ -135,7 +135,7 @@ private extension CameraManager {
         } catch {
             print("Error setting device audio input: \(error)")
             return false
-        }
+        }  */
         
         cameraOutput = AVCapturePhotoOutput()
         

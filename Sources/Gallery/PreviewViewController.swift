@@ -13,6 +13,10 @@ import Photos
 
 class PreviewViewController: UIViewController {
     
+    override var preferredStatusBarStyle: UIStatusBarStyle {
+        return .lightContent
+    }
+    
     weak var delegate: GalleryControllerDelegate?
     
     @IBOutlet weak var containerView: UIView!

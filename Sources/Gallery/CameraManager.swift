@@ -264,43 +264,11 @@ extension CameraManager: AVCaptureFileOutputRecordingDelegate, AVCapturePhotoCap
     
     func photoOutput(_ output: AVCapturePhotoOutput, didFinishProcessingPhoto photo: AVCapturePhoto, error: Error?) {
         
-        guard let imageData = photo.fileDataRepresentation() , let image = UIImage(data: imageData), let previewLayer = previewLayer ,let img = cropCameraImage(original: image, previewLayer: previewLayer) else {
+        guard let imageData = photo.fileDataRepresentation() , let image = UIImage(data: imageData) else {
             didCapturedPhoto?(nil, error)
             return
         }
-        didCapturedPhoto?(img, nil)
-    }
-    
-    
-    func cropCameraImage(original: UIImage, previewLayer: AVCaptureVideoPreviewLayer) -> UIImage? {
-        
-        var image = UIImage()
-        
-        let previewImageLayerBounds = previewLayer.bounds
-        
-        let originalWidth = original.size.width
-        let originalHeight = original.size.height
-        
-        let A = previewImageLayerBounds.origin
-        let B = CGPoint(x: previewImageLayerBounds.size.width, y: previewImageLayerBounds.origin.y)
-        let D = CGPoint(x: previewImageLayerBounds.size.width, y: previewImageLayerBounds.size.height)
-        
-        let a = previewLayer.captureDevicePointConverted(fromLayerPoint: A)
-        let b = previewLayer.captureDevicePointConverted(fromLayerPoint: B)
-        let d = previewLayer.captureDevicePointConverted(fromLayerPoint: D)
-        
-        let posX = floor(b.x * originalHeight)
-        let posY = floor(b.y * originalWidth)
-        
-        let width: CGFloat = d.x * originalHeight - b.x * originalHeight
-        let height: CGFloat = a.y * originalWidth - b.y * originalWidth
-        
-        let cropRect = CGRect(x: posX, y: posY, width: width, height: height)
-        
-        if let imageRef = original.cgImage?.cropping(to: cropRect) {
-            image = UIImage(cgImage: imageRef, scale: 0.5, orientation: cameraPosition == .back ? .right : .leftMirrored)
-        }
-        return image
+        didCapturedPhoto?(image, nil)
     }
 }
 

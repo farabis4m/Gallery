@@ -10,6 +10,8 @@
 		4E5822EE226ED9C200A72B7D /* TopView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E5822ED226ED9C200A72B7D /* TopView.swift */; };
 		4E5822F0226EE63700A72B7D /* BottomView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E5822EF226EE63700A72B7D /* BottomView.swift */; };
 		4E7D90C2227044A500DD588A /* CameraManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E7D90C1227044A500DD588A /* CameraManager.swift */; };
+		4E7F6E9422801EE800EB41DE /* UIImage-Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E7F6E9322801EE800EB41DE /* UIImage-Extensions.swift */; };
+		4E7F6E9822802EC300EB41DE /* HollowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E7F6E9722802EC300EB41DE /* HollowView.swift */; };
 		4E90503B226C42DA0068304C /* ArdhiCameraController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E90503A226C42DA0068304C /* ArdhiCameraController.swift */; };
 		4E90503D226C43960068304C /* CameraBottomView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E90503C226C43960068304C /* CameraBottomView.swift */; };
 		4ED0BA822271D1F4006FDEFA /* PreviewViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4ED0BA802271D1F4006FDEFA /* PreviewViewController.swift */; };
@@ -83,6 +85,8 @@
 		4E5822ED226ED9C200A72B7D /* TopView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TopView.swift; sourceTree = "<group>"; };
 		4E5822EF226EE63700A72B7D /* BottomView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BottomView.swift; sourceTree = "<group>"; };
 		4E7D90C1227044A500DD588A /* CameraManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraManager.swift; sourceTree = "<group>"; };
+		4E7F6E9322801EE800EB41DE /* UIImage-Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIImage-Extensions.swift"; sourceTree = "<group>"; };
+		4E7F6E9722802EC300EB41DE /* HollowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HollowView.swift; sourceTree = "<group>"; };
 		4E90503A226C42DA0068304C /* ArdhiCameraController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArdhiCameraController.swift; sourceTree = "<group>"; };
 		4E90503C226C43960068304C /* CameraBottomView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraBottomView.swift; sourceTree = "<group>"; };
 		4ED0BA802271D1F4006FDEFA /* PreviewViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreviewViewController.swift; sourceTree = "<group>"; };
@@ -357,6 +361,8 @@
 		D5C629691C3A809D007F7B7C /* Sources */ = {
 			isa = PBXGroup;
 			children = (
+				4E7F6E9322801EE800EB41DE /* UIImage-Extensions.swift */,
+				4E7F6E9722802EC300EB41DE /* HollowView.swift */,
 				D2D1A6BB1F84F4DB0083D4C5 /* Camera */,
 				D2D1A6C21F84F4DB0083D4C5 /* Gallery */,
 				D2D1A68F1F84F4DB0083D4C5 /* Images */,
@@ -449,6 +455,7 @@
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
 			knownRegions = (
+				English,
 				en,
 			);
 			mainGroup = D5B2E8951C3A780C00C0327D;
@@ -525,9 +532,11 @@
 				4EE12C962275D20800A12EA5 /* CropOverlay.swift in Sources */,
 				D2D1A6D11F84F4DB0083D4C5 /* Constraints.swift in Sources */,
 				D2D1A6DD1F84F4DB0083D4C5 /* LocationManager.swift in Sources */,
+				4E7F6E9822802EC300EB41DE /* HollowView.swift in Sources */,
 				D2D1A6F51F84F4DB0083D4C5 /* Video.swift in Sources */,
 				D2D1A6D31F84F4DB0083D4C5 /* EventHub.swift in Sources */,
 				D2D1A6CF1F84F4DB0083D4C5 /* ImagesLibrary.swift in Sources */,
+				4E7F6E9422801EE800EB41DE /* UIImage-Extensions.swift in Sources */,
 				D2D1A6EB1F84F4DB0083D4C5 /* EmptyView.swift in Sources */,
 				D2D1A6D81F84F4DB0083D4C5 /* UIScrollView+Extensions.swift in Sources */,
 				4E90503B226C42DA0068304C /* ArdhiCameraController.swift in Sources */,

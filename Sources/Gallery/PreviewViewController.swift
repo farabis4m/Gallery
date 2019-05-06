@@ -13,19 +13,26 @@ import Photos
 
 class PreviewViewController: UIViewController {
     
+    var wholeRect = CGRect.zero
+    
+    var isInitially = true
+    
+    let aspectHeight: CGFloat = 1.0
+    let aspectWidth: CGFloat = 1.0
+    
     override var preferredStatusBarStyle: UIStatusBarStyle {
         return .lightContent
+    }
+    
+    var cropOrigin : CGFloat {
+        return (containerView.frame.height - containerView.frame.width) / 2
     }
     
     weak var delegate: GalleryControllerDelegate?
     
     @IBOutlet weak var containerView: UIView!
-    @IBOutlet weak var constraintBottom: NSLayoutConstraint!
-    
-    private lazy var cropOverlay = makeCropView()
 
     enum Mode {
-        
         case image(image: UIImage)
         case video(video: URL)
         case libraryImage(asset: PHAsset)
@@ -58,13 +65,6 @@ class PreviewViewController: UIViewController {
             case .lbraryVideo, .libraryImage: return .photoLibrarySelected
             }
         }
-        
-        var bottomConstant: CGFloat {
-            switch self {
-                case .image, .video: return 145.0
-                case .lbraryVideo, .libraryImage: return 44.0
-            }
-        }
     }
     
     private var mode: Mode?
@@ -78,18 +78,20 @@ class PreviewViewController: UIViewController {
     
     private lazy var topView = makeTopView()
     
+    var hollowView: HollowView?
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
         buttonPreview.setImage(GalleryBundle.image("videoplay"), for: .normal)
         
-        
-        
         containerView.addSubview(scrollView)
         scrollView.frame = containerView.bounds
         
+        scrollView.decelerationRate = .fast
         scrollView.delegate = self
+        scrollView.showsHorizontalScrollIndicator = false
+        scrollView.showsVerticalScrollIndicator = false
         
         scrollView.addSubview(imageView)
         
@@ -98,25 +100,13 @@ class PreviewViewController: UIViewController {
         
         view.backgroundColor = .clear
         
-        let crop = GalleryConfig.shared.cropMode
-        containerView.addSubview(cropOverlay)
-        cropOverlay.g_pin(on: .centerX)
-        cropOverlay.g_pin(on: .centerY)
+        updateMode()
         
-        cropOverlay.isMovable = true
-        
-        switch crop {
-        case .square:
-            cropOverlay.g_pin(height: 200)
-            cropOverlay.g_pin(width: 200)
-        case .rectangle:
-            let width = containerView.bounds.width - 40
-            let ratio: CGFloat = 200 / 375
-            cropOverlay.g_pin(height: width * ratio)
-            cropOverlay.g_pin(width: width)
-        }
-        
-        
+        hollowView = HollowView(frame: containerView.bounds, transparentRect: CGRect(x: 0, y: cropOrigin, width: containerView.frame.width, height: containerView.frame.width))
+        containerView.addSubview(hollowView!)
+    }
+    
+    func updateMode() {
         guard let mode = mode else { return }
         topView.mode = mode.galleryMode
         buttonPreview.isHidden = !mode.shouldShowPreviewButton
@@ -124,7 +114,7 @@ class PreviewViewController: UIViewController {
         videoImageView.isHidden = !mode.shoulShowVideoImageView
         switch mode {
         case .image(let image):
-            assignImage(with: image)
+            updateInitially(with: image)
         case .video(let url):
             url.getimage { (image) in
                 self.videoImageView.image = image
@@ -132,7 +122,7 @@ class PreviewViewController: UIViewController {
         case .libraryImage(let asset):
             asset.getUIImage { [weak self] (image) in
                 guard let img = image else { return }
-                self?.assignImage(with: img)
+                self?.updateInitially(with: img)
             }
         case .lbraryVideo(let asset):
             asset.getUIImage { [weak self] (image) in
@@ -141,6 +131,20 @@ class PreviewViewController: UIViewController {
         }
     }
     
+    
+    
+    func updateInitially(with image: UIImage) {
+        let width = containerView.bounds.width
+        let height = width * aspectHeight / aspectWidth
+        wholeRect = CGRect(x: 0, y: containerView.bounds.height/2-height/2, width: width, height: height)
+        imageView.image = image
+        imageView.sizeToFit()
+        
+        let minZoom = max(width / image.size.width, height / image.size.height)
+        scrollView.minimumZoomScale = minZoom
+        scrollView.zoomScale = minZoom
+        scrollView.maximumZoomScale = minZoom*4
+    }
     
     @IBAction func buttonPreviewTapped(_ sender: Any) {
         guard let mode = mode else { return }
@@ -159,7 +163,6 @@ class PreviewViewController: UIViewController {
             self.playVideo(player: avplayer)
         default: break
         }
-        
     }
     
     func playVideo(player: AVPlayer) {
@@ -186,22 +189,18 @@ class PreviewViewController: UIViewController {
     }
     
     func crop() {
-        guard let image = imageView.image else {
-            return
-        }
-        let cropRect = makeProportionalCropRect()
-        let resizedCropRect = CGRect(x: (image.size.width) * cropRect.origin.x,
-                                     y: (image.size.height) * cropRect.origin.y,
-                                     width: (image.size.width * cropRect.width),
-                                     height: (image.size.height * cropRect.height))
-        
-        
-        cart.image = image.crop(rect: resizedCropRect)
-        dismiss(animated: true) {
-            EventHub.shared.finishedWithImage?()
-        }
+        guard let image = imageView.image else { return }
+        let scale = 1 / scrollView.zoomScale
+        let visibleRect = CGRect(
+            x: (scrollView.contentOffset.x + scrollView.contentInset.left) * scale,
+            y: (scrollView.contentOffset.y + scrollView.contentInset.top) * scale,
+            width: containerView.frame.width * scale,
+            height: containerView.frame.width * scale)
+            cart.image = image.crop(rect: visibleRect)
+            dismiss(animated: true) {
+                EventHub.shared.finishedWithImage?()
+            }
     }
-
 }
 
 extension PreviewViewController: UIScrollViewDelegate {
@@ -211,41 +210,9 @@ extension PreviewViewController: UIScrollViewDelegate {
     }
     
     func scrollViewDidZoom(_ scrollView: UIScrollView) {
-        let imageViewSize = imageView.frame.size
-        let scrollViewSize = scrollView.bounds.size
-        
-        let verticalPadding = imageViewSize.height < scrollViewSize.height ? (scrollViewSize.height - imageViewSize.height) / 2 : 0
-        let horizontalPadding = imageViewSize.width < scrollViewSize.width ? (scrollViewSize.width - imageViewSize.width) / 2 : 0
-        
-        if verticalPadding >= 0 {
-            // Center the image on screen
-            scrollView.contentInset = UIEdgeInsets(top: verticalPadding, left: horizontalPadding, bottom: verticalPadding, right: horizontalPadding)
-        } else {
-            // Limit the image panning to the screen bounds
-            scrollView.contentSize = imageViewSize
-        }
+        let gapToTheHole = containerView.frame.height/2-wholeRect.height/2
+        scrollView.contentInset = UIEdgeInsets(top: gapToTheHole , left: 0, bottom: gapToTheHole , right: 0)
     }
-    
-    private func makeProportionalCropRect() -> CGRect {
-        var cropRect = CGRect(x: cropOverlay.frame.origin.x + cropOverlay.outterGap,
-                              y: cropOverlay.frame.origin.y + cropOverlay.outterGap,
-                              width: cropOverlay.frame.size.width - 2 * cropOverlay.outterGap,
-                              height: cropOverlay.frame.size.height - 2 * cropOverlay.outterGap)
-        cropRect.origin.x += scrollView.contentOffset.x - imageView.frame.origin.x
-        cropRect.origin.y += scrollView.contentOffset.y - imageView.frame.origin.y
-        
-        let normalizedX = max(0, cropRect.origin.x / imageView.frame.width)
-        let normalizedY = max(0, cropRect.origin.y / imageView.frame.height)
-        
-        let extraWidth = min(0, cropRect.origin.x)
-        let extraHeight = min(0, cropRect.origin.y)
-        
-        let normalizedWidth = min(1, (cropRect.width + extraWidth) / imageView.frame.width)
-        let normalizedHeight = min(1, (cropRect.height + extraHeight) / imageView.frame.height)
-        
-        return CGRect(x: normalizedX, y: normalizedY, width: normalizedWidth, height: normalizedHeight)
-    }
-    
 }
 
 private extension PreviewViewController {
@@ -254,36 +221,10 @@ private extension PreviewViewController {
         return topView
     }
     
-    func makeCropView() -> CropOverlay {
-        let view = CropOverlay()
-        view.backgroundColor = .clear
-        return view
-    }
-    
     func makeScrollView() -> UIScrollView {
         let scrollview = UIScrollView()
         scrollview.backgroundColor = .black
         return scrollview
-    }
-}
-
-extension PreviewViewController {
-    private func setZoomScale() {
-        let imageViewSize = imageView.bounds.size
-        let scrollViewSize = scrollView.bounds.size
-        let widthScale = scrollViewSize.width / imageViewSize.width
-        let heightScale = scrollViewSize.height / imageViewSize.height
-        
-        scrollView.minimumZoomScale = min(widthScale, heightScale)
-        scrollView.setZoomScale(scrollView.minimumZoomScale, animated: false)
-    }
-    
-    private func assignImage(with image: UIImage){
-        imageView.image = image
-        imageView.backgroundColor = .white
-        imageView.sizeToFit()
-        setZoomScale()
-        scrollViewDidZoom(scrollView)
     }
 }
 
@@ -297,48 +238,4 @@ extension PreviewViewController {
         controller.modalPresentationStyle = .overCurrentContext
         from.present(controller, animated: true, completion: nil)
     }
-}
-
-
-extension UIImage {
-    func crop(rect: CGRect) -> UIImage {
-        
-        var rectTransform: CGAffineTransform
-        switch imageOrientation {
-        case .left:
-            rectTransform = CGAffineTransform(rotationAngle: radians(90)).translatedBy(x: 0, y: -size.height)
-        case .right:
-            rectTransform = CGAffineTransform(rotationAngle: radians(-90)).translatedBy(x: -size.width, y: 0)
-        case .down:
-            rectTransform = CGAffineTransform(rotationAngle: radians(-180)).translatedBy(x: -size.width, y: -size.height)
-        default:
-            rectTransform = CGAffineTransform.identity
-        }
-        
-        rectTransform = rectTransform.scaledBy(x: scale, y: scale)
-        
-        if let cropped = cgImage?.cropping(to: rect.applying(rectTransform)) {
-            return UIImage(cgImage: cropped, scale: scale, orientation: imageOrientation).fixOrientation()
-        }
-        
-        return self
-        
-        
-}
-    
-    func fixOrientation() -> UIImage {
-        if imageOrientation == .up {
-            return self
-        }
-        UIGraphicsBeginImageContextWithOptions(size, false, scale)
-        draw(in: CGRect(origin: .zero, size: size))
-        let normalizedImage: UIImage = UIGraphicsGetImageFromCurrentImageContext() ?? self
-        UIGraphicsEndImageContext()
-        
-        return normalizedImage
-    }
-    
-}
-internal func radians(_ degrees: CGFloat) -> CGFloat {
-    return degrees / 180 * .pi
 }

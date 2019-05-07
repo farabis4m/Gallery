@@ -144,7 +144,14 @@ class PreviewViewController: UIViewController {
         scrollView.minimumZoomScale = minZoom
         scrollView.zoomScale = minZoom
         scrollView.maximumZoomScale = minZoom*4
+        
+        guard scrollView.zoomScale == 1.0 else { return }
+        
+        scrollView.setZoomScale(minZoom, animated: true)
+        let desiredOffset = CGPoint(x: 0, y: -scrollView.contentInset.top)
+        scrollView.setContentOffset(desiredOffset, animated: false)
     }
+    
     
     @IBAction func buttonPreviewTapped(_ sender: Any) {
         guard let mode = mode else { return }

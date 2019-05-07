@@ -230,7 +230,7 @@ private extension PreviewViewController {
 
 extension PreviewViewController {
     static func show(from: UIViewController, cart: Cart, mode: Mode, delegate: GalleryControllerDelegate) {
-        let controller = PreviewViewController(nibName: "PreviewViewController", bundle: Foundation.Bundle(for: GalleryBundle.self))
+        let controller = UIStoryboard(name: "Gallery", bundle: Foundation.Bundle(for: GalleryBundle.self)).instantiateViewController(withIdentifier: "PreviewViewController") as! PreviewViewController
         controller.modalTransitionStyle = .crossDissolve
         controller.cart = cart
         controller.mode = mode

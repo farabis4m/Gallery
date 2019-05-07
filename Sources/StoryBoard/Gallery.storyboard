@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="14490.70" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="14460.31" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina5_5" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14490.49"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14460.20"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -17,42 +17,9 @@
                     <view key="view" contentMode="scaleToFill" id="sTt-os-ibn">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="736"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <subviews>
-                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="p0m-Wn-0qa">
-                                <rect key="frame" x="0.0" y="70" width="414" height="666"/>
-                                <subviews>
-                                    <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="7NG-QO-eDh">
-                                        <rect key="frame" x="0.0" y="0.0" width="414" height="666"/>
-                                    </imageView>
-                                </subviews>
-                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                <constraints>
-                                    <constraint firstAttribute="bottom" secondItem="7NG-QO-eDh" secondAttribute="bottom" id="Agf-C7-09R"/>
-                                    <constraint firstItem="7NG-QO-eDh" firstAttribute="top" secondItem="p0m-Wn-0qa" secondAttribute="top" id="TB1-re-i2Q"/>
-                                    <constraint firstItem="7NG-QO-eDh" firstAttribute="leading" secondItem="p0m-Wn-0qa" secondAttribute="leading" id="VTX-6Y-2TP"/>
-                                    <constraint firstAttribute="trailing" secondItem="7NG-QO-eDh" secondAttribute="trailing" id="hce-bj-Ydu"/>
-                                </constraints>
-                            </view>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="v2b-Nq-ceF">
-                                <rect key="frame" x="192" y="386" width="30" height="34"/>
-                            </button>
-                        </subviews>
-                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                        <constraints>
-                            <constraint firstItem="p0m-Wn-0qa" firstAttribute="top" secondItem="RD6-rt-O3J" secondAttribute="top" constant="50" id="Gh7-lj-H8c"/>
-                            <constraint firstItem="RD6-rt-O3J" firstAttribute="trailing" secondItem="p0m-Wn-0qa" secondAttribute="trailing" id="Ul0-33-XU2"/>
-                            <constraint firstItem="v2b-Nq-ceF" firstAttribute="centerY" secondItem="p0m-Wn-0qa" secondAttribute="centerY" id="Y40-Qh-JYS"/>
-                            <constraint firstItem="p0m-Wn-0qa" firstAttribute="leading" secondItem="RD6-rt-O3J" secondAttribute="leading" id="ZOy-8z-nCD"/>
-                            <constraint firstItem="v2b-Nq-ceF" firstAttribute="centerX" secondItem="p0m-Wn-0qa" secondAttribute="centerX" id="ckU-lF-2Oq"/>
-                            <constraint firstItem="RD6-rt-O3J" firstAttribute="bottom" secondItem="p0m-Wn-0qa" secondAttribute="bottom" id="ywd-eb-HVn"/>
-                        </constraints>
+                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <viewLayoutGuide key="safeArea" id="RD6-rt-O3J"/>
                     </view>
-                    <connections>
-                        <outlet property="buttonPreview" destination="v2b-Nq-ceF" id="xFo-nO-AVj"/>
-                        <outlet property="containerView" destination="p0m-Wn-0qa" id="Nqh-uf-2xX"/>
-                        <outlet property="videoImageView" destination="7NG-QO-eDh" id="eAY-NW-FJc"/>
-                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="S4h-FP-0Yp" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>

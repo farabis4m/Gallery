@@ -25,12 +25,15 @@ class PreviewViewController: UIViewController {
     }
     
     var cropOrigin : CGFloat {
-        return (containerView.frame.height - containerView.frame.width) / 2
+        let width = containerView.frame.width
+        let height = width * aspectHeight
+        let center = containerView.frame.height / 2
+        return center - (height / 2)
     }
     
     weak var delegate: GalleryControllerDelegate?
     
-    @IBOutlet weak var containerView: UIView!
+    lazy var containerView = UIView()
 
     enum Mode {
         case image(image: UIImage)
@@ -71,10 +74,10 @@ class PreviewViewController: UIViewController {
     
     var cart = Cart()
 
-    @IBOutlet weak var videoImageView: UIImageView!
+    @IBOutlet weak var videoImageView: UIImageView?
     private lazy var scrollView = makeScrollView()
     var imageView = UIImageView()
-    @IBOutlet weak var buttonPreview: UIButton!
+    @IBOutlet weak var buttonPreview: UIButton?
     
     private lazy var topView = makeTopView()
     
@@ -83,7 +86,10 @@ class PreviewViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        buttonPreview.setImage(GalleryBundle.image("videoplay"), for: .normal)
+        buttonPreview?.setImage(GalleryBundle.image("videoplay"), for: .normal)
+        view.addSubview(containerView)
+        containerView.backgroundColor = .clear
+        containerView.frame = CGRect(x: 0, y: 50, width: view.frame.width, height: view.frame.height - 50)
         
         containerView.addSubview(scrollView)
         scrollView.frame = containerView.bounds
@@ -102,22 +108,22 @@ class PreviewViewController: UIViewController {
         
         updateMode()
         
-        hollowView = HollowView(frame: containerView.bounds, transparentRect: CGRect(x: 0, y: cropOrigin, width: containerView.frame.width, height: containerView.frame.width))
+        hollowView = HollowView(frame: containerView.bounds, transparentRect: CGRect(x: 0, y: cropOrigin, width: containerView.frame.width  , height: containerView.frame.width * aspectHeight ))
         containerView.addSubview(hollowView!)
     }
     
     func updateMode() {
         guard let mode = mode else { return }
         topView.mode = mode.galleryMode
-        buttonPreview.isHidden = !mode.shouldShowPreviewButton
+        buttonPreview?.isHidden = !mode.shouldShowPreviewButton
         scrollView.isHidden = !mode.shouldShowScrollView
-        videoImageView.isHidden = !mode.shoulShowVideoImageView
+        videoImageView?.isHidden = !mode.shoulShowVideoImageView
         switch mode {
         case .image(let image):
             updateInitially(with: image)
         case .video(let url):
             url.getimage { (image) in
-                self.videoImageView.image = image
+                self.videoImageView?.image = image
             }
         case .libraryImage(let asset):
             asset.getUIImage { [weak self] (image) in
@@ -126,7 +132,7 @@ class PreviewViewController: UIViewController {
             }
         case .lbraryVideo(let asset):
             asset.getUIImage { [weak self] (image) in
-                self?.videoImageView.image = image
+                self?.videoImageView?.image = image
             }
         }
     }
@@ -202,7 +208,7 @@ class PreviewViewController: UIViewController {
             x: (scrollView.contentOffset.x + scrollView.contentInset.left) * scale,
             y: (scrollView.contentOffset.y + scrollView.contentInset.top) * scale,
             width: containerView.frame.width * scale,
-            height: containerView.frame.width * scale)
+            height: containerView.frame.width * aspectHeight * scale)
             cart.image = image.crop(rect: visibleRect)
             dismiss(animated: true) {
                 EventHub.shared.finishedWithImage?()
@@ -237,12 +243,12 @@ private extension PreviewViewController {
 
 extension PreviewViewController {
     static func show(from: UIViewController, cart: Cart, mode: Mode, delegate: GalleryControllerDelegate) {
-        let controller = UIStoryboard(name: "Gallery", bundle: Foundation.Bundle(for: GalleryBundle.self)).instantiateViewController(withIdentifier: "PreviewViewController") as! PreviewViewController
-        controller.modalTransitionStyle = .crossDissolve
+        let controller = PreviewViewController()
+//        controller.modalTransitionStyle = .crossDissolve
         controller.cart = cart
         controller.mode = mode
         controller.delegate = delegate
-        controller.modalPresentationStyle = .overCurrentContext
+//        controller.modalPresentationStyle = .overCurrentContext
         from.present(controller, animated: true, completion: nil)
     }
 }

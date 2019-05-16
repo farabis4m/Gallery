@@ -20,7 +20,7 @@ class Alert {
         }
         
         var message: String {
-            return self == .camera ? "gallery.alert.camera.message".g_localize(fallback: "Camera") : "gallery.alert.library.message".g_localize(fallback: "Library")
+            return self == .camera ? "gallery.alert.camera.message".g_localize(fallback: "Please go to Settings and allow access to your camera.") : "gallery.alert.library.message".g_localize(fallback: "Please go to Settings and allow access to your photo library.")
         }
         
         var ok : String {
@@ -35,7 +35,7 @@ class Alert {
     static let shared = Alert()
     
     func show(from: UIViewController?, mode: Mode) {
-        let alert = UIAlertController(title: nil, message: mode.message, preferredStyle: .alert)
+        let alert = UIAlertController(title: "", message: mode.message, preferredStyle: .alert)
         
         // Add "OK" Button to alert, pressing it will bring you to the settings app
         alert.addAction(UIAlertAction(title: mode.ok, style: .default, handler: { action in

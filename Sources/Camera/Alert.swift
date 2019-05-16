@@ -26,19 +26,27 @@ class Alert {
         var ok : String {
             return "gallery.alert.title.ok".g_localize(fallback: "O.K")
         }
+        
+        var cancel: String {
+            return "gallery.alert.cancel".g_localize(fallback: "Cancel")
+        }
     }
     
     static let shared = Alert()
     
     func show(from: UIViewController?, mode: Mode) {
-        let alert = UIAlertController(title: mode.title, message: mode.message, preferredStyle: .alert)
+        let alert = UIAlertController(title: nil, message: mode.message, preferredStyle: .alert)
         
         // Add "OK" Button to alert, pressing it will bring you to the settings app
         alert.addAction(UIAlertAction(title: mode.ok, style: .default, handler: { action in
             UIApplication.shared.open(URL(string: UIApplication.openSettingsURLString)!)
         }))
+        
+        alert.addAction(UIAlertAction(title: mode.cancel, style: .default, handler: { action in
+            EventHub.shared.didCancelPermission?()
+        }))
+        
         // Show the alert with animation
         from?.present(alert, animated: true)
     }
-    
 }

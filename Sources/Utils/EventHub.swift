@@ -16,9 +16,7 @@ class EventHub {
     var stackViewTouched: Action?
     var capturedImage: Action?
     var capturedVideo: Action?
-    
     var dismissPreview: Action?
-    
     var finishedWithImage: Action?
-    
+    var didCancelPermission: Action?
 }

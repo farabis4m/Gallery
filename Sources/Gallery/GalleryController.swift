@@ -120,6 +120,11 @@ extension GalleryController {
                 strongSelf.delegate?.galleryController(strongSelf, didfinish: image)
             }
         }
+        EventHub.shared.didCancelPermission = { [weak self] in
+            if let strongSelf = self {
+                strongSelf.delegate?.galleryControllerDidCancel(strongSelf)
+            }
+        }
     }
 }
 

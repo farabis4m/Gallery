@@ -47,7 +47,10 @@ class ArdhiCameraController: UIViewController {
         if Permission.Camera.status != .authorized {
             Permission.Camera.request { [weak self] in
                 guard Permission.Camera.status == .authorized else {
-                    Alert.shared.show(from: self, mode: .camera)
+                    DispatchQueue.main.async { [weak self] in
+                        guard let strongSelf = self else { return }
+                        Alert.shared.show(from: strongSelf, mode: .camera)
+                    }
                     return
                 }
                 self?.setupCamera()

@@ -226,7 +226,10 @@ extension ImagesController: PageAware {
     if Permission.Photos.status != .authorized {
         Permission.Photos.request { [weak self] in
             guard Permission.Photos.status == .authorized else {
-                Alert.shared.show(from: self, mode: .library)
+                DispatchQueue.main.async { [weak self] in
+                    guard let strongSelf = self else { return }
+                    Alert.shared.show(from: strongSelf, mode: .library)
+                }
                 return
             }
             self?.reload()

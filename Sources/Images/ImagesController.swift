@@ -3,6 +3,12 @@ import Photos
 
 class ImagesController: UIViewController {
     
+    let gradientView: LibraryGradientView = {
+        let gradientView = LibraryGradientView()
+        gradientView.translatesAutoresizingMaskIntoConstraints = false
+        return gradientView
+    }()
+    
     weak var galleryController: GalleryController?
     
     let columnCount: CGFloat = 3
@@ -77,6 +83,13 @@ class ImagesController: UIViewController {
         }
         EventHub.shared.doneWithImages?()
     }
+//
+//    view.addSubview(gradientView)
+//
+//    gradientView.g_pin(on: .left)
+//    gradientView.g_pin(on: .bottom)
+//    gradientView.g_pin(on: .right)
+//    gradientView.g_pin(height: 114)
   }
 
   // MARK: - Setup
@@ -130,6 +143,12 @@ class ImagesController: UIViewController {
         containerView.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
         containerviewHeightConstraint = containerView.heightAnchor.constraint(equalToConstant: 36)
         containerviewHeightConstraint?.isActive = true
+        
+        containerView.addSubview(gradientView)
+        gradientView.leadingAnchor.constraint(equalTo: containerView.leadingAnchor).isActive = true
+        gradientView.trailingAnchor.constraint(equalTo: containerView.trailingAnchor).isActive = true
+        gradientView.topAnchor.constraint(equalTo: containerView.topAnchor).isActive = true
+        gradientView.heightAnchor.constraint(equalToConstant: 36).isActive = true
         
         // Button Top of view controller to be presented
         containerView.addSubview(arrowButton)

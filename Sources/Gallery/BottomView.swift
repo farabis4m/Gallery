@@ -45,7 +45,8 @@ class BottomView: UIView {
         centerButton.tag = 1
         rightButton.tag = 2
         
-        rightButton.isUserInteractionEnabled = false
+        // Todo: Should update for video
+        rightButton.isHidden = true
         
         [leftButton, centerButton, rightButton].forEach {
             $0.addTarget(self, action: #selector(buttonTapped(_:)), for: .touchUpInside)
@@ -89,4 +90,3 @@ class BottomView: UIView {
         setup()
     }
 }
-

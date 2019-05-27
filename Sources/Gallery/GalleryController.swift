@@ -4,7 +4,7 @@ import AVFoundation
 
 public protocol GalleryControllerDelegate: class {
     func galleryController(_ controller: GalleryController, didfinish withImage: UIImage)
-    func galleryController(_ controller: GalleryController, didSelectVideo video: Video)
+    func galleryController(_ controller: GalleryController, didSelectVideo videoURL: URL?, previewImage: UIImage?)
     func galleryControllerDidCancel(_ controller: GalleryController)
 }
 
@@ -15,6 +15,7 @@ open class GalleryController: UIViewController {
     public enum Tabs{
         case library
         case photo
+        case video
     }
     
     // MARK: - Init
@@ -75,6 +76,10 @@ open class GalleryController: UIViewController {
         } else if initialTab == .photo {
             addChildController(cameraController)
             bottomView.centerButton.isSelected = true
+        } else if initialTab == .video {
+            cameraController.mediaType = .video
+            addChildController(cameraController)
+            bottomView.rightButton.isSelected = true
         }
     }
 }
@@ -102,7 +107,7 @@ extension GalleryController {
         
         EventHub.shared.capturedVideo = { [weak self] in
             guard let welf = self, let url = welf.cart.url, let delegate = welf.delegate else { return }
-            PreviewViewController.show(from: welf, cart: welf.cart, mode: .video(video: url), delegate: delegate)
+            VideoPreviewController.show(from: welf, url: url, asset: nil)
         }
         
         EventHub.shared.doneWithImages = { [weak self] in
@@ -112,7 +117,7 @@ extension GalleryController {
         
         EventHub.shared.doneWithVideos = { [weak self] in
             guard let welf = self, let video = welf.cart.video, let delegate = welf.delegate else { return }
-            PreviewViewController.show(from: welf, cart: welf.cart, mode: .lbraryVideo(asset: video.asset), delegate: delegate)
+            VideoPreviewController.show(from: welf, url: nil, asset: video.asset)
         }
         
         EventHub.shared.finishedWithImage = { [weak self] in
@@ -123,6 +128,12 @@ extension GalleryController {
         EventHub.shared.didCancelPermission = { [weak self] in
             if let strongSelf = self {
                 strongSelf.delegate?.galleryControllerDidCancel(strongSelf)
+            }
+        }
+        
+        EventHub.shared.videoUrl = { [weak self] url, image in
+            if let strongSelf = self {
+                strongSelf.delegate?.galleryController(strongSelf, didSelectVideo: url, previewImage: image)
             }
         }
     }
@@ -178,16 +189,27 @@ private extension GalleryController {
     }
     
     func setupActions() {
-        bottomView.didTapLeft = { [unowned self] in
+        
+        func isRecording() -> Bool {
+            return cameraController.manager?.isRecording ?? false
+        }
+        
+        bottomView.didTapLeft = { [unowned self] button in
+            guard !isRecording() else { return }
+            self.bottomView.updateBottomSelection(sender: button)
             self.addChildController(self.imageController)
         }
         
-        bottomView.didTapCenter = { [unowned self] in 
+        bottomView.didTapCenter = { [unowned self] button in
+            guard !isRecording() else { return }
+            self.bottomView.updateBottomSelection(sender: button)
             self.cameraController.mediaType = .camera
             self.addChildController(self.cameraController)
         }
         
-        bottomView.didTapRight = { [unowned self] in
+        bottomView.didTapRight = { [unowned self] button in
+            guard !isRecording() else { return }
+            self.bottomView.updateBottomSelection(sender: button)
             self.cameraController.mediaType = .video
             self.addChildController(self.cameraController)
         }

@@ -11,6 +11,16 @@ import AVFoundation
 
 class ArdhiCameraController: UIViewController {
     
+    var timer: Timer?
+    var time: Int = 0 {
+        didSet {
+            labelTimer.text = time.timerString()
+        }
+    }
+    
+    private lazy var timerView = makeTimerview()
+    private lazy var labelTimer = makeTimerLabel()
+    
     var manager: CameraManager?
     
     required init?(coder aDecoder: NSCoder) {
@@ -32,6 +42,7 @@ class ArdhiCameraController: UIViewController {
         didSet {
             viewBottom.mediaType = mediaType
             manager?.mediaType = mediaType
+            timerView.isHidden = !(mediaType == .video)
         }
     }
 
@@ -96,6 +107,16 @@ private extension ArdhiCameraController {
         viewPreview.g_pin(on: .top)
         viewPreview.g_pin(on: .right)
         viewPreview.g_pin(on: .bottom, view: viewBottom, on: .top)
+        
+        view.addSubview(timerView)
+        timerView.g_pin(height: 30)
+        timerView.g_pin(on: .left)
+        timerView.g_pin(on: .top)
+        timerView.g_pin(on: .right)
+        
+        timerView.addSubview(labelTimer)
+        labelTimer.g_pinCenter()
+        
     }
 }
 
@@ -115,6 +136,20 @@ private extension ArdhiCameraController {
         let lbl = UILabel()
         return lbl
     }
+    
+    func makeTimerview() -> UIView {
+        let view = UIView()
+        view.backgroundColor = UIColor.black.withAlphaComponent(0.5)
+        return view
+    }
+    
+    func makeTimerLabel() -> UILabel {
+        let label = UILabel()
+        label.text = "00:00:00"
+        label.textColor = .white
+        label.backgroundColor = .clear
+        return label
+    }
 }
 
 private extension ArdhiCameraController {
@@ -133,11 +168,23 @@ private extension ArdhiCameraController {
         }
         
         viewBottom.didTapCaptureVideo = { [unowned self] sender in
+            self.manageTimer()
             self.manager?.captureVideo()
         }
         
         viewBottom.didTapToggleCamera = { [unowned self] sender in
             self.manager?.cameraPosition.toggle()
+        }
+    }
+    
+    func manageTimer() {
+        if let timer = timer, timer.isValid {
+            timer.invalidate()
+        } else {
+            time = 0
+            timer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true, block: { _ in
+                self.time += 1
+            })
         }
     }
 }
@@ -161,9 +208,11 @@ extension ArdhiCameraController: PageAware {
         }
         manager?.didCapturedVideo = { [weak self] url, error in
             guard let welf = self, let url = url, welf.mediaType == .video else { return }
+            self?.viewBottom.mode = .enabled
             welf.cart.reset()
             welf.cart.url = url
             EventHub.shared.capturedVideo?()
+            self?.time = 0
         }
         
         manager?.isFlashAvailable = { [weak self] flashAvailable in

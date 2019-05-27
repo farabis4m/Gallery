@@ -10,11 +10,11 @@ public protocol CartDelegate: class {
 /// Cart holds selected images and videos information
 public class Cart {
 
-  public var images: [Image] = []
+    public var images: [Image] = []
     public var image: UIImage?
     var url: URL?
-  public var video: Video?
-  var delegates: NSHashTable<AnyObject> = NSHashTable.weakObjects()
+    public var video: Video?
+    var delegates: NSHashTable<AnyObject> = NSHashTable.weakObjects()
 
   // MARK: - Initialization
 

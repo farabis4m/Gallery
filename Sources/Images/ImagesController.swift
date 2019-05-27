@@ -256,14 +256,22 @@ extension ImagesController: PageAware {
     }
 
     once.run {
-      reload()
+        reload()
     }
   }
     
     func reload() {
-        library.reload { [weak self] in
-            guard let welf = self else { return }
-            welf.reloadLibraries()
+
+        if GalleryConfig.shared.isVideoEnabled {
+            videoLibrary.reload { [weak self] in
+                self?.library.reload { [weak self] in
+                    self?.reloadLibraries()
+                }
+            }
+        } else {
+            library.reload { [weak self] in
+                self?.reloadLibraries()
+            }
         }
     }
     

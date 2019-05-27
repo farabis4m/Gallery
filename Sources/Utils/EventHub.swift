@@ -1,8 +1,9 @@
-import Foundation
+import UIKit
 
 class EventHub {
     
     typealias Action = () -> Void
+    typealias VideoAction = (URL?, UIImage?) -> Void
     
     static let shared = EventHub()
     
@@ -19,4 +20,5 @@ class EventHub {
     var dismissPreview: Action?
     var finishedWithImage: Action?
     var didCancelPermission: Action?
+    var videoUrl: VideoAction?
 }

@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		4E32791C229BEBC0001B1B36 /* Int-Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E32791B229BEBC0001B1B36 /* Int-Extensions.swift */; };
 		4E5822EE226ED9C200A72B7D /* TopView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E5822ED226ED9C200A72B7D /* TopView.swift */; };
 		4E5822F0226EE63700A72B7D /* BottomView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E5822EF226EE63700A72B7D /* BottomView.swift */; };
 		4E66961522929BAD00EDCF53 /* LibraryGradientView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E66961422929BAD00EDCF53 /* LibraryGradientView.swift */; };
@@ -15,6 +16,7 @@
 		4E7F6E9822802EC300EB41DE /* HollowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E7F6E9722802EC300EB41DE /* HollowView.swift */; };
 		4E90503B226C42DA0068304C /* ArdhiCameraController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E90503A226C42DA0068304C /* ArdhiCameraController.swift */; };
 		4E90503D226C43960068304C /* CameraBottomView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E90503C226C43960068304C /* CameraBottomView.swift */; };
+		4EA5C588229A5E1700EF0F53 /* VideoPreviewViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EA5C587229A5E1700EF0F53 /* VideoPreviewViewController.swift */; };
 		4ED0BA822271D1F4006FDEFA /* PreviewViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4ED0BA802271D1F4006FDEFA /* PreviewViewController.swift */; };
 		4ED1E1D422815E3F000E4EB7 /* Gallery.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 4ED1E1D322815E3F000E4EB7 /* Gallery.storyboard */; };
 		4EEE8BB72276D76400C9AB57 /* Alert.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EEE8BB62276D76400C9AB57 /* Alert.swift */; };
@@ -82,6 +84,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		4E32791B229BEBC0001B1B36 /* Int-Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Int-Extensions.swift"; sourceTree = "<group>"; };
 		4E5822ED226ED9C200A72B7D /* TopView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TopView.swift; sourceTree = "<group>"; };
 		4E5822EF226EE63700A72B7D /* BottomView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BottomView.swift; sourceTree = "<group>"; };
 		4E66961422929BAD00EDCF53 /* LibraryGradientView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibraryGradientView.swift; sourceTree = "<group>"; };
@@ -90,6 +93,7 @@
 		4E7F6E9722802EC300EB41DE /* HollowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HollowView.swift; sourceTree = "<group>"; };
 		4E90503A226C42DA0068304C /* ArdhiCameraController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArdhiCameraController.swift; sourceTree = "<group>"; };
 		4E90503C226C43960068304C /* CameraBottomView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraBottomView.swift; sourceTree = "<group>"; };
+		4EA5C587229A5E1700EF0F53 /* VideoPreviewViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoPreviewViewController.swift; sourceTree = "<group>"; };
 		4ED0BA802271D1F4006FDEFA /* PreviewViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreviewViewController.swift; sourceTree = "<group>"; };
 		4ED1E1D322815E3F000E4EB7 /* Gallery.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = Gallery.storyboard; sourceTree = "<group>"; };
 		4EEE8BB62276D76400C9AB57 /* Alert.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Alert.swift; sourceTree = "<group>"; };
@@ -171,6 +175,14 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		4E32791A229BEBAD001B1B36 /* Extensions */ = {
+			isa = PBXGroup;
+			children = (
+				4E32791B229BEBC0001B1B36 /* Int-Extensions.swift */,
+			);
+			path = Extensions;
+			sourceTree = "<group>";
+		};
 		4ED1E1D522816117000E4EB7 /* StoryBoard */ = {
 			isa = PBXGroup;
 			children = (
@@ -317,6 +329,7 @@
 				4E5822EF226EE63700A72B7D /* BottomView.swift */,
 				4E7D90C1227044A500DD588A /* CameraManager.swift */,
 				4ED0BA802271D1F4006FDEFA /* PreviewViewController.swift */,
+				4EA5C587229A5E1700EF0F53 /* VideoPreviewViewController.swift */,
 				4E66961422929BAD00EDCF53 /* LibraryGradientView.swift */,
 			);
 			path = Gallery;
@@ -368,6 +381,7 @@
 		D5C629691C3A809D007F7B7C /* Sources */ = {
 			isa = PBXGroup;
 			children = (
+				4E32791A229BEBAD001B1B36 /* Extensions */,
 				4E7F6E9322801EE800EB41DE /* UIImage-Extensions.swift */,
 				4E7F6E9722802EC300EB41DE /* HollowView.swift */,
 				4ED1E1D522816117000E4EB7 /* StoryBoard */,
@@ -506,6 +520,7 @@
 				D2D1A6CA1F84F4DB0083D4C5 /* Album.swift in Sources */,
 				D2D1A6F11F84F4DB0083D4C5 /* ShutterButton.swift in Sources */,
 				D2D1A6D61F84F4DB0083D4C5 /* String+Extensions.swift in Sources */,
+				4EA5C588229A5E1700EF0F53 /* VideoPreviewViewController.swift in Sources */,
 				4E5822F0226EE63700A72B7D /* BottomView.swift in Sources */,
 				4EEE8BB72276D76400C9AB57 /* Alert.swift in Sources */,
 				D2D1A6E41F84F4DB0083D4C5 /* Utils.swift in Sources */,
@@ -555,6 +570,7 @@
 				4ED0BA822271D1F4006FDEFA /* PreviewViewController.swift in Sources */,
 				D2D1A6E11F84F4DB0083D4C5 /* Permission.swift in Sources */,
 				D2D1A6DC1F84F4DB0083D4C5 /* GalleryBundle.swift in Sources */,
+				4E32791C229BEBC0001B1B36 /* Int-Extensions.swift in Sources */,
 				D2D1A6E01F84F4DB0083D4C5 /* PagesController.swift in Sources */,
 				D2D1A6EC1F84F4DB0083D4C5 /* FrameView.swift in Sources */,
 				D2D1A6ED1F84F4DB0083D4C5 /* GridView.swift in Sources */,

@@ -13,7 +13,7 @@ class LibraryGradientView: UIView {
     private let gradient: CAGradientLayer = {
         let layer = CAGradientLayer()
         let topColor = UIColor(red: 12/255, green: 18/255, blue: 28/255, alpha: 0)
-        let bottomColor = UIColor(red: 12/255, green: 18/255, blue: 28/255, alpha: 0.5)
+        let bottomColor = UIColor(red: 12/255, green: 18/255, blue: 28/255, alpha: 0.8)
         layer.colors = [topColor.cgColor, bottomColor.cgColor]
         layer.locations = [0,1]
         return layer
@@ -23,7 +23,6 @@ class LibraryGradientView: UIView {
         super.init(frame: .zero)
         gradient.frame = frame
         layer.insertSublayer(gradient, at: 0)
-        
     }
     
     required init?(coder aDecoder: NSCoder) {

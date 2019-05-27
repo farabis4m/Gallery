@@ -12,6 +12,10 @@ import AVKit
 
 class CameraManager: NSObject {
     
+    var isRecording : Bool {
+        return movieOutput.isRecording
+    }
+    
     var mediaType: ArdhiCameraController.MediaType = .camera
     
     var isFlashEnabled = false {

@@ -228,7 +228,7 @@ public struct GalleryConfig {
     public var albumTitleColor: UIColor?
     public var albumCountColor: UIColor?
     
-    
+    public var isVideoEnabled: Bool = true
     public var cropMode: CropMode = .square
 }
 

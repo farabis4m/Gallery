@@ -37,35 +37,13 @@ class PreviewViewController: UIViewController {
 
     enum Mode {
         case image(image: UIImage)
-        case video(video: URL)
         case libraryImage(asset: PHAsset)
-        case lbraryVideo(asset: PHAsset)
-        
-        var shouldShowPreviewButton: Bool {
-            switch self {
-            case .video: return true
-            case .image: return false
-            case .libraryImage: return false
-            case .lbraryVideo: return true
-            }
-        }
-        
-        var shoulShowVideoImageView: Bool {
-            return shouldShowPreviewButton
-        }
-        
-        var shouldShowScrollView: Bool {
-            return !shoulShowVideoImageView
-        }
-        
-        var shouldShowCropView: Bool {
-            return !shoulShowVideoImageView
-        }
+
         
         var galleryMode: GalleryMode {
             switch self {
-            case .image, .video: return .cameraSelected
-            case .lbraryVideo, .libraryImage: return .photoLibrarySelected
+            case .image: return .cameraSelected
+            case .libraryImage: return .photoLibrarySelected
             }
         }
     }
@@ -74,10 +52,8 @@ class PreviewViewController: UIViewController {
     
     var cart = Cart()
 
-    @IBOutlet weak var videoImageView: UIImageView?
     private lazy var scrollView = makeScrollView()
     var imageView = UIImageView()
-    @IBOutlet weak var buttonPreview: UIButton?
     
     private lazy var topView = makeTopView()
     
@@ -86,7 +62,6 @@ class PreviewViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        buttonPreview?.setImage(GalleryBundle.image("videoplay"), for: .normal)
         view.addSubview(containerView)
         containerView.backgroundColor = .clear
         containerView.frame = CGRect(x: 0, y: 50, width: view.frame.width, height: view.frame.height - 50)
@@ -115,29 +90,16 @@ class PreviewViewController: UIViewController {
     func updateMode() {
         guard let mode = mode else { return }
         topView.mode = mode.galleryMode
-        buttonPreview?.isHidden = !mode.shouldShowPreviewButton
-        scrollView.isHidden = !mode.shouldShowScrollView
-        videoImageView?.isHidden = !mode.shoulShowVideoImageView
         switch mode {
         case .image(let image):
             updateInitially(with: image)
-        case .video(let url):
-            url.getimage { (image) in
-                self.videoImageView?.image = image
-            }
         case .libraryImage(let asset):
             asset.getUIImage { [weak self] (image) in
                 guard let img = image else { return }
                 self?.updateInitially(with: img)
             }
-        case .lbraryVideo(let asset):
-            asset.getUIImage { [weak self] (image) in
-                self?.videoImageView?.image = image
-            }
         }
     }
-    
-    
     
     func updateInitially(with image: UIImage) {
         let width = containerView.bounds.width
@@ -156,26 +118,6 @@ class PreviewViewController: UIViewController {
         scrollView.setZoomScale(minZoom, animated: true)
         let desiredOffset = CGPoint(x: 0, y: -scrollView.contentInset.top)
         scrollView.setContentOffset(desiredOffset, animated: false)
-    }
-    
-    
-    @IBAction func buttonPreviewTapped(_ sender: Any) {
-        guard let mode = mode else { return }
-        var player: AVPlayer?
-        switch mode {
-        case .lbraryVideo(let asset):
-            asset.getURL { (url) in
-                guard let url = url else { return }
-                player = AVPlayer(url: url)
-                guard let avplayer = player else { return }
-                self.playVideo(player: avplayer)
-            }
-        case .video(let url):
-            player = AVPlayer(url: url)
-            guard let avplayer = player else { return }
-            self.playVideo(player: avplayer)
-        default: break
-        }
     }
     
     func playVideo(player: AVPlayer) {
@@ -244,11 +186,11 @@ private extension PreviewViewController {
 extension PreviewViewController {
     static func show(from: UIViewController, cart: Cart, mode: Mode, delegate: GalleryControllerDelegate) {
         let controller = PreviewViewController()
-//        controller.modalTransitionStyle = .crossDissolve
         controller.cart = cart
         controller.mode = mode
         controller.delegate = delegate
-//        controller.modalPresentationStyle = .overCurrentContext
+        controller.modalTransitionStyle = .crossDissolve
+        controller.modalPresentationStyle = .overCurrentContext
         from.present(controller, animated: true, completion: nil)
     }
 }

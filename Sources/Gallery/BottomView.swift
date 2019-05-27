@@ -10,9 +10,9 @@ import UIKit
 
 class BottomView: UIView {
     
-    var didTapLeft: (() -> ())?
-    var didTapCenter: (() -> ())?
-    var didTapRight: (() -> ())?
+    var didTapLeft: ((UIButton) -> ())?
+    var didTapCenter: ((UIButton) -> ())?
+    var didTapRight: ((UIButton) -> ())?
     
     lazy var leftButton = makeButton()
     lazy var centerButton = makeButton()
@@ -45,8 +45,7 @@ class BottomView: UIView {
         centerButton.tag = 1
         rightButton.tag = 2
         
-        // Todo: Should update for video
-        rightButton.isHidden = true
+        rightButton.isHidden = !GalleryConfig.shared.isVideoEnabled
         
         [leftButton, centerButton, rightButton].forEach {
             $0.addTarget(self, action: #selector(buttonTapped(_:)), for: .touchUpInside)
@@ -64,14 +63,16 @@ class BottomView: UIView {
     @objc
     private func buttonTapped(_ sender: UIButton) {
         
-        [leftButton, centerButton, rightButton].forEach({ $0.isSelected = (sender.tag == $0.tag) })
-        
         switch sender.tag {
-        case 0: didTapLeft?()
-        case 1: didTapCenter?()
-        case 2: didTapRight?()
+        case 0: didTapLeft?(sender)
+        case 1: didTapCenter?(sender)
+        case 2: didTapRight?(sender)
         default: break
         }
+    }
+    
+    func updateBottomSelection(sender: UIButton) {
+        [leftButton, centerButton, rightButton].forEach({ $0.isSelected = (sender.tag == $0.tag) })
     }
     
     private func makeButton() -> UIButton {

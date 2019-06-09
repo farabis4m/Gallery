@@ -35,15 +35,9 @@ class HollowView: UIView {
         UIColor.clear.setFill();
         UIRectFill(holeRectIntersection);
         
-        var aPath = UIBezierPath()
-        
-        aPath.move(to: CGPoint(x: holeRectIntersection.minX, y: holeRectIntersection.minY))
-        aPath.addLine(to: CGPoint(x: holeRectIntersection.maxX, y: holeRectIntersection.minY))
-        aPath.addLine(to: CGPoint(x: holeRectIntersection.maxX, y: holeRectIntersection.maxY))
-        aPath.addLine(to: CGPoint(x: holeRectIntersection.minX, y: holeRectIntersection.maxY))
-        aPath.close()
-        UIColor(red: 255/255, green: 107/255, blue: 0, alpha: 1.0).set()
-        aPath.lineWidth = 2.0
-        aPath.stroke()
+        let path = UIBezierPath(rect: holeRectIntersection)
+        path.lineWidth = 2.0
+        UIColor(red: 255/255, green: 107/255, blue: 0, alpha: 1.0).setStroke()
+        path.stroke()
     }
 }

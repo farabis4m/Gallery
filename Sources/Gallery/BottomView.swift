@@ -65,7 +65,10 @@ class BottomView: UIView {
         
         switch sender.tag {
         case 0: didTapLeft?(sender)
-        case 1: didTapCenter?(sender)
+        case 1:
+            if GalleryConfig.shared.isPhotoEnabled {
+                didTapCenter?(sender)
+            }
         case 2: didTapRight?(sender)
         default: break
         }

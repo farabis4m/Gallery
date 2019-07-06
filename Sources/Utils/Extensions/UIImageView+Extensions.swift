@@ -56,19 +56,27 @@ extension URL {
 extension PHAsset {
     
     func getUIImage(completion: @escaping (UIImage?) -> ()) {
-        let manager = PHImageManager.default()
+        
         let options = PHImageRequestOptions()
-        options.version = .original
-        options.isSynchronous = true
-        manager.requestImageData(for: self, options: options) { data, _, _, _ in
-            guard let data = data else {
-                completion(nil)
-                return
-            }
-            DispatchQueue.main.async {
-                completion(UIImage(data: data))
-            }
+        options.deliveryMode = PHImageRequestOptionsDeliveryMode.highQualityFormat
+        options.isSynchronous = false
+        options.isNetworkAccessAllowed = true
+        
+        options.progressHandler = {  (progress, error, stop, info) in
+            print("progress: \(progress)")
         }
+        
+        let sz = CGSize(width: CGFloat(pixelHeight), height: CGFloat(pixelHeight))
+        
+        PHImageManager.default().requestImage(for: self, targetSize: sz, contentMode: PHImageContentMode.aspectFill, options: options, resultHandler: {
+            (image, info) in
+            print("dict: \(String(describing: info))")
+            print("image size: \(String(describing: image?.size))")
+            
+            DispatchQueue.main.async {
+                completion(image)
+            }
+        })
     }
     
     func getURL(completion: @escaping (URL?) -> ()) {

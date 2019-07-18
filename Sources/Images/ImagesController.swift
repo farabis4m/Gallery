@@ -83,13 +83,6 @@ class ImagesController: UIViewController {
         }
         EventHub.shared.doneWithImages?()
     }
-//
-//    view.addSubview(gradientView)
-//
-//    gradientView.g_pin(on: .left)
-//    gradientView.g_pin(on: .bottom)
-//    gradientView.g_pin(on: .right)
-//    gradientView.g_pin(height: 114)
   }
 
   // MARK: - Setup
@@ -357,8 +350,17 @@ extension ImagesController: UICollectionViewDataSource, UICollectionViewDelegate
   func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
     
     if let item = items[indexPath.item] as? Image  {
-        cart.images = [item]
-        EventHub.shared.doneWithImages?()
+        
+        if GalleryConfig.shared.mode == .checkin {
+            item.asset.getUIImage { [weak self] (image) in
+                self?.cart.image = image
+                EventHub.shared.finishedWithImage?()
+            }
+        } else {
+            cart.images = [item]
+            EventHub.shared.doneWithImages?()
+        }
+        
     } else if let item = items[indexPath.item] as? Video {
         cart.video = item
         EventHub.shared.doneWithVideos?()

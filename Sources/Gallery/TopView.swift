@@ -185,6 +185,11 @@ enum GalleryMode {
 
 public struct GalleryConfig {
     
+    public enum GalleryMode {
+        case checkin
+        case `default`
+    }
+    
     public static var shared = GalleryConfig()
     
     private init() { }
@@ -231,6 +236,8 @@ public struct GalleryConfig {
     public var isVideoEnabled: Bool = true
     public var isPhotoEnabled: Bool = true
     public var cropMode: CropMode = .square
+    
+    public var mode: GalleryMode = .default
 }
 
 public enum CropMode {

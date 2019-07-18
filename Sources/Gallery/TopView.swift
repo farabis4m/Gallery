@@ -218,13 +218,10 @@ public struct GalleryConfig {
     
     public var bottomUnselectedFont: UIFont?
     
-    
     // Bottom View
     public var bottomFont: UIFont?
     
-    
     // photos controller
-    
     public var selectedAlbumFont: UIFont?
     public var albumTitleFont: UIFont?
     public var albumCountFont: UIFont?
@@ -235,12 +232,23 @@ public struct GalleryConfig {
     
     public var isVideoEnabled: Bool = true
     public var isPhotoEnabled: Bool = true
+    public var isCroppingEnabled = true
     public var cropMode: CropMode = .square
     
-    public var mode: GalleryMode = .default
 }
 
 public enum CropMode {
     case square
     case rectangle
+}
+
+extension UIImageView {
+    func addBlurEffect() -> UIVisualEffectView {
+        let blurEffect = UIBlurEffect(style: UIBlurEffect.Style.light)
+        let blurEffectView = UIVisualEffectView(effect: blurEffect)
+        blurEffectView.frame = self.bounds
+        
+        blurEffectView.autoresizingMask = [.flexibleWidth, .flexibleHeight] // for supporting device rotation
+        return blurEffectView
+    }
 }

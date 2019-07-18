@@ -350,17 +350,8 @@ extension ImagesController: UICollectionViewDataSource, UICollectionViewDelegate
   func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
     
     if let item = items[indexPath.item] as? Image  {
-        
-        if GalleryConfig.shared.mode == .checkin {
-            item.asset.getUIImage { [weak self] (image) in
-                self?.cart.image = image
-                EventHub.shared.finishedWithImage?()
-            }
-        } else {
-            cart.images = [item]
-            EventHub.shared.doneWithImages?()
-        }
-        
+        cart.images = [item]
+        EventHub.shared.doneWithImages?()
     } else if let item = items[indexPath.item] as? Video {
         cart.video = item
         EventHub.shared.doneWithVideos?()

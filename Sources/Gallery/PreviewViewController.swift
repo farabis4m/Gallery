@@ -38,7 +38,6 @@ class PreviewViewController: UIViewController {
     enum Mode {
         case image(image: UIImage)
         case libraryImage(asset: PHAsset)
-
         
         var galleryMode: GalleryMode {
             switch self {
@@ -61,44 +60,12 @@ class PreviewViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        view.addSubview(containerView)
-        containerView.backgroundColor = .clear
-        containerView.frame = CGRect(x: 0, y: 50, width: view.frame.width, height: view.frame.height - 50)
-        
-        containerView.addSubview(scrollView)
-        scrollView.frame = containerView.bounds
-        
-        scrollView.decelerationRate = .fast
-        scrollView.delegate = self
-        scrollView.showsHorizontalScrollIndicator = false
-        scrollView.showsVerticalScrollIndicator = false
-        
-        scrollView.addSubview(imageView)
-        
+
         setupViews()
+        setupImageView()
         setupActions()
-        
-        view.backgroundColor = .clear
-        
         updateMode()
-        
-        hollowView = HollowView(frame: containerView.bounds, transparentRect: CGRect(x: 0, y: cropOrigin, width: containerView.frame.width  , height: containerView.frame.width * aspectHeight ))
-        containerView.addSubview(hollowView!)
-    }
-    
-    func updateMode() {
-        guard let mode = mode else { return }
-        topView.mode = mode.galleryMode
-        switch mode {
-        case .image(let image):
-            updateInitially(with: image)
-        case .libraryImage(let asset):
-            asset.getUIImage { [weak self] (image) in
-                guard let img = image else { return }
-                self?.updateInitially(with: img)
-            }
-        }
+        setupHollowView()
     }
     
     func updateInitially(with image: UIImage) {
@@ -127,6 +94,7 @@ class PreviewViewController: UIViewController {
     }
     
     func setupViews() {
+        view.backgroundColor = .black
         view.addSubview(topView)
         topView.g_pin(on: .left)
         topView.g_pin(on: .right)
@@ -139,7 +107,14 @@ class PreviewViewController: UIViewController {
         }
         
         topView.didTapRight = { [unowned self] in
-            self.crop()
+            if GalleryConfig.shared.isCroppingEnabled {
+                self.crop()
+            } else {
+                self.cart.image = self.imageView.image
+                self.dismiss(animated: true, completion: {
+                    EventHub.shared.finishedWithImage?()
+                })
+            }
         }
     }
     
@@ -180,6 +155,82 @@ private extension PreviewViewController {
         let scrollview = UIScrollView()
         scrollview.backgroundColor = .black
         return scrollview
+    }
+}
+
+private extension PreviewViewController {
+    
+    func updateMode() {
+        guard let mode = mode else { return }
+        topView.mode = mode.galleryMode
+        switch mode {
+        case .image(let image):
+            
+            if GalleryConfig.shared.isCroppingEnabled {
+                updateInitially(with: image)
+            } else {
+                imageView.image = image
+            }
+            
+        case .libraryImage(let asset):
+            asset.getUIImage { [weak self] (image) in
+                guard let img = image else { return }
+                if GalleryConfig.shared.isCroppingEnabled {
+                    self?.updateInitially(with: img)
+                } else {
+                    self?.imageView.image = img
+                }
+            }
+        }
+    }
+
+}
+
+private extension PreviewViewController {
+    
+    func setupImageView() {
+        if GalleryConfig.shared.isCroppingEnabled {
+            configureScrollView()
+        } else {
+            configureImageViewWithoutScrolling()
+        }
+    }
+    
+    func configureScrollView() {
+        view.addSubview(containerView)
+        containerView.backgroundColor = .clear
+        containerView.frame = CGRect(x: 0, y: 50, width: view.frame.width, height: view.frame.height - 50)
+        
+        containerView.addSubview(scrollView)
+        scrollView.frame = containerView.bounds
+        
+        scrollView.decelerationRate = .fast
+        scrollView.delegate = self
+        scrollView.showsHorizontalScrollIndicator = false
+        scrollView.showsVerticalScrollIndicator = false
+        
+        scrollView.addSubview(imageView)
+    }
+    
+    func configureImageViewWithoutScrolling() {
+        imageView.contentMode = .scaleAspectFit
+        imageView.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(imageView)
+        
+        let layout = view.safeAreaLayoutGuide
+        
+        NSLayoutConstraint.activate([
+            imageView.leadingAnchor.constraint(equalTo: layout.leadingAnchor),
+            imageView.trailingAnchor.constraint(equalTo: layout.trailingAnchor),
+            imageView.bottomAnchor.constraint(equalTo: layout.bottomAnchor),
+            imageView.topAnchor.constraint(equalTo: topView.bottomAnchor)
+            ])
+    }
+    
+    func setupHollowView() {
+        guard GalleryConfig.shared.isCroppingEnabled else { return }
+        hollowView = HollowView(frame: containerView.bounds, transparentRect: CGRect(x: 0, y: cropOrigin, width: containerView.frame.width  , height: containerView.frame.width * aspectHeight ))
+        containerView.addSubview(hollowView!)
     }
 }
 

@@ -272,8 +272,45 @@ extension CameraManager: AVCaptureFileOutputRecordingDelegate, AVCapturePhotoCap
             didCapturedPhoto?(nil, error)
             return
         }
-        didCapturedPhoto?(image, nil)
+        
+        if !GalleryConfig.shared.isCroppingEnabled, let layer = previewLayer, let cropImage = cropCameraImage(original: image, previewLayer: layer) {
+            didCapturedPhoto?(cropImage, nil)
+        } else {
+            didCapturedPhoto?(image, nil)
+        }
     }
+    
+    func cropCameraImage(original: UIImage, previewLayer: AVCaptureVideoPreviewLayer) -> UIImage? {
+        
+        var image = UIImage()
+        
+        let previewImageLayerBounds = previewLayer.bounds
+        
+        let originalWidth = original.size.width
+        let originalHeight = original.size.height
+        
+        let A = previewImageLayerBounds.origin
+        let B = CGPoint(x: previewImageLayerBounds.size.width, y: previewImageLayerBounds.origin.y)
+        let D = CGPoint(x: previewImageLayerBounds.size.width, y: previewImageLayerBounds.size.height)
+        
+        let a = previewLayer.captureDevicePointConverted(fromLayerPoint: A)
+        let b = previewLayer.captureDevicePointConverted(fromLayerPoint: B)
+        let d = previewLayer.captureDevicePointConverted(fromLayerPoint: D)
+        
+        let posX = floor(b.x * originalHeight)
+        let posY = floor(b.y * originalWidth)
+        
+        let width: CGFloat = d.x * originalHeight - b.x * originalHeight
+        let height: CGFloat = a.y * originalWidth - b.y * originalWidth
+        
+        let cropRect = CGRect(x: posX, y: posY, width: width, height: height)
+        
+        if let imageRef = original.cgImage?.cropping(to: cropRect) {
+            image = UIImage(cgImage: imageRef, scale: 0.5, orientation: cameraPosition == .back ? .right : .leftMirrored)
+        }
+        return image
+    }
+    
 }
 
 // MARK: outside functions to capture photo and video

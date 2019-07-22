@@ -16,6 +16,20 @@ class CameraBottomView: UIView {
         }
     }
     
+    var orientation = UIInterfaceOrientation.portrait {
+        didSet {
+            UIView.animate(withDuration: 0.3) { [weak self] in
+                self?.animateOnOrientation()
+            }
+        }
+    }
+    
+    func animateOnOrientation() {
+        [buttonToggleCamera, buttonFlash].forEach {
+            $0.transform = orientation == .portrait ? CGAffineTransform.identity : CGAffineTransform(rotationAngle: .pi / 2)
+        }
+    }
+
     enum Mode {
         case enabled
         case disabled

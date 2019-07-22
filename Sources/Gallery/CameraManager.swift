@@ -12,6 +12,8 @@ import AVKit
 
 class CameraManager: NSObject {
     
+    var capturedOrientation = UIInterfaceOrientation.portrait
+    
     var isRecording : Bool {
         return movieOutput.isRecording
     }
@@ -308,6 +310,11 @@ extension CameraManager: AVCaptureFileOutputRecordingDelegate, AVCapturePhotoCap
         if let imageRef = original.cgImage?.cropping(to: cropRect) {
             image = UIImage(cgImage: imageRef, scale: 0.5, orientation: cameraPosition == .back ? .right : .leftMirrored)
         }
+        
+        if capturedOrientation != .portrait , let cgImage = image.cgImage {
+            image = UIImage(cgImage: cgImage, scale: 1.0, orientation: .up)
+        }
+        
         return image
     }
     

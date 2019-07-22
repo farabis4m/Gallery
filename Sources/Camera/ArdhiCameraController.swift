@@ -8,6 +8,7 @@
 
 import UIKit
 import AVFoundation
+import CoreMotion
 
 class ArdhiCameraController: UIViewController {
     
@@ -22,6 +23,12 @@ class ArdhiCameraController: UIViewController {
     private lazy var labelTimer = makeTimerLabel()
     
     var manager: CameraManager?
+    var orientationLast = UIInterfaceOrientation.portrait {
+        didSet {
+            updateCameraViewOrientation()
+        }
+    }
+    var motionManager: CMMotionManager?
     
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
@@ -52,6 +59,8 @@ class ArdhiCameraController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        setupMotionManager()
         setupViews()
         setupActions()
         
@@ -79,8 +88,6 @@ class ArdhiCameraController: UIViewController {
             }
         }
     }
-    
-    
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
@@ -233,5 +240,55 @@ extension ArdhiCameraController {
 extension UIViewController {
     func dismissController() {
         dismiss(animated: true)
+    }
+}
+
+private extension ArdhiCameraController {
+    
+    func setupMotionManager() {
+        motionManager = CMMotionManager()
+        motionManager?.accelerometerUpdateInterval = 0.2
+        motionManager?.gyroUpdateInterval = 0.2
+        
+        if let current = OperationQueue.current {
+            motionManager?.startAccelerometerUpdates(to: current, withHandler: {
+                (accelerometerData, error) -> Void in
+                if error == nil, let acceleration = accelerometerData?.acceleration {
+                    self.outputAccelertionData(acceleration)
+                }
+                else {
+                    print("\(error?.localizedDescription ?? "Accelerometerdata error")")
+                }
+            })
+        }
+    }
+    
+    func outputAccelertionData(_ acceleration: CMAcceleration) {
+        var orientationNew: UIInterfaceOrientation
+        if acceleration.x >= 0.75 {
+            orientationNew = .landscapeLeft
+        }
+        else if acceleration.x <= -0.75 {
+            orientationNew = .landscapeRight
+        }
+        else if acceleration.y <= -0.75 {
+            orientationNew = .portrait
+        }
+        else if acceleration.y >= 0.75 {
+            orientationNew = .portraitUpsideDown
+        } else {
+            return
+        }
+        
+        if orientationNew == orientationLast {
+            return
+        }
+        
+        orientationLast = orientationNew
+    }
+    
+    func updateCameraViewOrientation() {
+        manager?.capturedOrientation = orientationLast
+        viewBottom.orientation = orientationLast
     }
 }

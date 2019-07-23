@@ -13,6 +13,17 @@ import Photos
 
 class PreviewViewController: UIViewController {
     
+    
+    override func viewSafeAreaInsetsDidChange() {
+        super.viewSafeAreaInsetsDidChange()
+        
+        guard let window = UIApplication.shared.keyWindow else { return }
+        let safeAreaTop = window.safeAreaInsets.top; let safeAreaBottom = window.safeAreaInsets.bottom
+        containerView.frame = CGRect(x: 0, y: 50 + safeAreaTop, width: view.frame.width, height: view.frame.height - 50 - safeAreaTop - safeAreaBottom)
+        scrollView.frame = containerView.bounds
+        
+    }
+    
     var wholeRect = CGRect.zero
     
     var isInitially = true
@@ -61,7 +72,6 @@ class PreviewViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        setupViews()
         setupImageView()
         setupActions()
         updateMode()
@@ -183,6 +193,8 @@ private extension PreviewViewController {
             }
         }
     }
+    
+    
 
 }
 
@@ -191,7 +203,9 @@ private extension PreviewViewController {
     func setupImageView() {
         if GalleryConfig.shared.isCroppingEnabled {
             configureScrollView()
+            setupViews()
         } else {
+            setupViews()
             configureImageViewWithoutScrolling()
         }
     }

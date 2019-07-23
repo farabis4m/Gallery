@@ -198,8 +198,12 @@ private extension PreviewViewController {
     
     func configureScrollView() {
         view.addSubview(containerView)
+        
         containerView.backgroundColor = .clear
-        containerView.frame = CGRect(x: 0, y: 50, width: view.frame.width, height: view.frame.height - 50)
+        
+        guard let window = UIApplication.shared.keyWindow else { return }
+        let safeAreaTop = window.safeAreaInsets.top; let safeAreaBottom = window.safeAreaInsets.bottom
+        containerView.frame = CGRect(x: 0, y: 50 + safeAreaTop, width: view.frame.width, height: view.frame.height - 50 - safeAreaTop - safeAreaBottom)
         
         containerView.addSubview(scrollView)
         scrollView.frame = containerView.bounds

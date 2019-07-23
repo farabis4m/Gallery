@@ -278,7 +278,13 @@ extension CameraManager: AVCaptureFileOutputRecordingDelegate, AVCapturePhotoCap
         if !GalleryConfig.shared.isCroppingEnabled, let layer = previewLayer, let cropImage = cropCameraImage(original: image, previewLayer: layer) {
             didCapturedPhoto?(cropImage, nil)
         } else {
-            didCapturedPhoto?(image, nil)
+            
+            if capturedOrientation != .portrait , let cgImage = image.cgImage {
+                let newImage = UIImage(cgImage: cgImage, scale: 1.0, orientation: .up)
+                didCapturedPhoto?(newImage, nil)
+            } else {
+                didCapturedPhoto?(image, nil)
+            }
         }
     }
     

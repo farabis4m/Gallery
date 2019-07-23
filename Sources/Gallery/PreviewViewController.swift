@@ -28,7 +28,10 @@ class PreviewViewController: UIViewController {
     
     var isInitially = true
     
-    let aspectHeight: CGFloat = 1.0
+    var aspectHeight: CGFloat {
+        return GalleryConfig.shared.cropMode == .rectangle ? 200 / 375 : 1
+    }
+    
     let aspectWidth: CGFloat = 1.0
     
     override var preferredStatusBarStyle: UIStatusBarStyle {

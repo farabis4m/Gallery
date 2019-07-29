@@ -9,7 +9,6 @@
 import AVFoundation
 import AVKit
 
-
 class CameraManager: NSObject {
     
     var capturedOrientation = UIInterfaceOrientation.portrait
@@ -149,6 +148,8 @@ private extension CameraManager {
             captureSession.addOutput(output)
         }
         
+        movieOutput.maxRecordedDuration = CMTime(seconds: GalleryConfig.shared.videoDuration, preferredTimescale: 1)
+        
         // Movie output
         if captureSession.canAddOutput(movieOutput) {
             captureSession.addOutput(movieOutput)
@@ -261,11 +262,9 @@ extension CameraManager: AVCaptureFileOutputRecordingDelegate, AVCapturePhotoCap
     }
     
     func fileOutput(_ output: AVCaptureFileOutput, didFinishRecordingTo outputFileURL: URL, from connections: [AVCaptureConnection], error: Error?) {
-        guard error == nil else {
-            didCapturedVideo?(nil, error)
-            return
+        if outputFileURL.filestatus != .isNot {
+            didCapturedVideo?(outputFileURL, nil)
         }
-        didCapturedVideo?(outputFileURL, nil)
     }
     
     func photoOutput(_ output: AVCapturePhotoOutput, didFinishProcessingPhoto photo: AVCapturePhoto, error: Error?) {
@@ -362,6 +361,49 @@ extension CameraManager {
             case .back: return .back
             case .front: return .front
             }
+        }
+    }
+}
+
+extension String {
+    
+    func fileExistswithPath() -> Bool {
+        let manager = FileManager.default
+        if let _ = manager.contents(atPath: self) {
+            print("Content exists")
+            return true
+        }
+        return false
+    }
+}
+
+
+extension URL {
+    enum Filestatus {
+        case isFile
+        case isDir
+        case isNot
+    }
+    
+    var filestatus: Filestatus {
+        get {
+            let filestatus: Filestatus
+            var isDir: ObjCBool = false
+            if FileManager.default.fileExists(atPath: self.path, isDirectory: &isDir) {
+                if isDir.boolValue {
+                    // file exists and is a directory
+                    filestatus = .isDir
+                }
+                else {
+                    // file exists and is not a directory
+                    filestatus = .isFile
+                }
+            }
+            else {
+                // file does not exist
+                filestatus = .isNot
+            }
+            return filestatus
         }
     }
 }

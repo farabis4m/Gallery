@@ -175,7 +175,6 @@ private extension ArdhiCameraController {
         }
         
         viewBottom.didTapCaptureVideo = { [unowned self] sender in
-            self.manageTimer()
             self.manager?.captureVideo()
         }
         
@@ -184,15 +183,16 @@ private extension ArdhiCameraController {
         }
     }
     
-    func manageTimer() {
-        if let timer = timer, timer.isValid {
-            timer.invalidate()
-        } else {
-            time = 0
-            timer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true, block: { _ in
-                self.time += 1
-            })
-        }
+    func startTimer() {
+        time = 0
+        timer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true, block: { _ in
+            self.time += 1
+        })
+    }
+    
+    func stopTimer() {
+        time = 0
+        timer?.invalidate()
     }
 }
 
@@ -212,6 +212,7 @@ extension ArdhiCameraController: PageAware {
         }
         manager?.didStartedVideoCapturing = { [weak self] in
             self?.viewBottom.mode = .disabled
+            self?.startTimer()
         }
         manager?.didCapturedVideo = { [weak self] url, error in
             guard let welf = self, let url = url, welf.mediaType == .video else { return }
@@ -219,7 +220,7 @@ extension ArdhiCameraController: PageAware {
             welf.cart.reset()
             welf.cart.url = url
             EventHub.shared.capturedVideo?()
-            self?.time = 0
+            self?.stopTimer()
         }
         
         manager?.isFlashAvailable = { [weak self] flashAvailable in

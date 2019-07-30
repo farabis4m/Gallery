@@ -234,7 +234,7 @@ public struct GalleryConfig {
     public var isPhotoEnabled: Bool = true
     public var isCroppingEnabled = true
     public var cropMode: CropMode = .square
-    public var videoDuration: Double = 10.0
+    public var videoDuration: Double = 60.0
     
 }
 

@@ -129,18 +129,18 @@ private extension CameraManager {
             return false
         }
         
-       /* // Setup Microphone
-        let microphone = AVCaptureDevice.default(for: AVMediaType.audio)!
-        
-        do {
-            let micInput = try AVCaptureDeviceInput(device: microphone)
-            if captureSession.canAddInput(micInput) {
-                captureSession.addInput(micInput)
+        // Setup Microphone
+        if let microphone = AVCaptureDevice.default(for: AVMediaType.audio) {
+            do {
+                let micInput = try AVCaptureDeviceInput(device: microphone)
+                if captureSession.canAddInput(micInput) {
+                    captureSession.addInput(micInput)
+                }
+            } catch {
+                print("Error setting device audio input: \(error)")
+                return false
             }
-        } catch {
-            print("Error setting device audio input: \(error)")
-            return false
-        }  */
+        }
         
         cameraOutput = AVCapturePhotoOutput()
         
@@ -219,14 +219,16 @@ private extension CameraManager {
 private extension CameraManager {
     
     func startVideoRecording() {
-        let connection = movieOutput.connection(with: AVMediaType.video)
+//        let connection = movieOutput.connection(with: AVMediaType.video)
+        let connection = movieOutput.connection(with: .video)
+        
         
         if (connection?.isVideoOrientationSupported)! {
             connection?.videoOrientation = currentVideoOrientation()
         }
         
         if (connection?.isVideoStabilizationSupported)! {
-            connection?.preferredVideoStabilizationMode = AVCaptureVideoStabilizationMode.auto
+//            connection?.preferredVideoStabilizationMode = AVCaptureVideoStabilizationMode.auto
         }
 
         movieOutput.startRecording(to: tempFilePath, recordingDelegate: self)

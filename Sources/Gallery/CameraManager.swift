@@ -219,12 +219,16 @@ private extension CameraManager {
 private extension CameraManager {
     
     func startVideoRecording() {
-//        let connection = movieOutput.connection(with: AVMediaType.video)
+        
         let connection = movieOutput.connection(with: .video)
         
-        
         if (connection?.isVideoOrientationSupported)! {
-            connection?.videoOrientation = currentVideoOrientation()
+            switch capturedOrientation {
+            case .landscapeLeft: connection?.videoOrientation = .landscapeLeft
+            case .landscapeRight: connection?.videoOrientation = .landscapeRight
+            default: connection?.videoOrientation = .portrait
+            }
+            
         }
         
         if (connection?.isVideoStabilizationSupported)! {

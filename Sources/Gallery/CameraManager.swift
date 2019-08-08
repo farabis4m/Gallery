@@ -17,7 +17,11 @@ class CameraManager: NSObject {
         return movieOutput.isRecording
     }
     
-    var mediaType: ArdhiCameraController.MediaType = .camera
+    var mediaType: ArdhiCameraController.MediaType = .camera {
+        didSet {
+            inputAudioSession()
+        }
+    }
     
     var isFlashEnabled = false {
         didSet {
@@ -99,6 +103,16 @@ class CameraManager: NSObject {
     }
 }
 
+private extension CameraManager {
+    func canAddMicrophone() -> Bool {
+        switch AVAudioSession.sharedInstance().recordPermission {
+        case .denied: return false
+        case .granted: return true
+        case.undetermined: return true
+        }
+    }
+}
+
 // Initiating camera
 private extension CameraManager {
     
@@ -106,6 +120,21 @@ private extension CameraManager {
         if setupSession() {
             setupPreview()
             startSession()
+        }
+    }
+    
+    func inputAudioSession() {
+        // Setup Microphone
+        if canAddMicrophone(), let microphone = AVCaptureDevice.default(for: AVMediaType.audio), mediaType == .video {
+            do {
+                let micInput = try AVCaptureDeviceInput(device: microphone)
+                
+                if captureSession.canAddInput(micInput) {
+                    captureSession.addInput(micInput)
+                }
+            } catch {
+                print("Error setting device audio input: \(error)")
+            }
         }
     }
     
@@ -129,18 +158,6 @@ private extension CameraManager {
             return false
         }
         
-        // Setup Microphone
-        if let microphone = AVCaptureDevice.default(for: AVMediaType.audio) {
-            do {
-                let micInput = try AVCaptureDeviceInput(device: microphone)
-                if captureSession.canAddInput(micInput) {
-                    captureSession.addInput(micInput)
-                }
-            } catch {
-                print("Error setting device audio input: \(error)")
-                return false
-            }
-        }
         
         cameraOutput = AVCapturePhotoOutput()
         

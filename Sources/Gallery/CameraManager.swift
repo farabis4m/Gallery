@@ -62,13 +62,22 @@ class CameraManager: NSObject {
 
     private var tempFilePath: URL = {
         let paths = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)
-        let documentsDirectory = paths[0] as String
-        let filePath: String = "\(documentsDirectory)/video.mp4"
+        let documentsDirectory = paths[0] as NSString
+        let filePath: String = documentsDirectory.appendingPathComponent(GalleryConfig.shared.videoFileName)
         if FileManager.default.fileExists(atPath: filePath) {
             try? FileManager.default.removeItem(atPath: filePath)
         }
         return URL(fileURLWithPath: filePath)
     }()
+    
+    class func filepath(_ directory: FileManager.SearchPathDirectory, filename: String) -> String {
+        
+        let directories = NSSearchPathForDirectoriesInDomains(directory, .userDomainMask, true)
+        
+        let documentsDirectory = directories[0] as NSString
+        
+        return documentsDirectory.appendingPathComponent("\(filename)")
+    }
     
     private var activeInput: AVCaptureDeviceInput? {
         didSet {

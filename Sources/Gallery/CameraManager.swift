@@ -149,7 +149,7 @@ private extension CameraManager {
     
     func setupSession() -> Bool {
         
-        captureSession.sessionPreset = AVCaptureSession.Preset.high
+        captureSession.sessionPreset = AVCaptureSession.Preset.medium
         
         // Setup Camera
         guard let camera = AVCaptureDevice.default(.builtInWideAngleCamera, for: .video, position: cameraPosition.position) else { return  false }

@@ -85,6 +85,7 @@ class ArdhiCameraController: UIViewController {
             self.setupCameraManager()
             DispatchQueue.main.async { [weak self] in
                 self?.setupCameraManagerActions()
+                self?.manager?.mediaType = self?.mediaType ?? .camera
             }
         }
     }

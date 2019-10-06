@@ -25,8 +25,19 @@ class CameraBottomView: UIView {
     }
     
     func animateOnOrientation() {
+        
+        var transform = CGAffineTransform.identity
+        
+        if orientation == .landscapeRight {
+            transform = CGAffineTransform(rotationAngle: .pi / 2)
+        } else if orientation == .landscapeLeft {
+            transform = CGAffineTransform(rotationAngle: -.pi / 2)
+        } else {
+            transform = .identity
+        }
+        
         [buttonToggleCamera, buttonFlash].forEach {
-            $0.transform = orientation == .portrait ? CGAffineTransform.identity : CGAffineTransform(rotationAngle: .pi / 2)
+            $0.transform = transform
         }
     }
 

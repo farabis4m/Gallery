@@ -209,23 +209,6 @@ private extension CameraManager {
         return DispatchQueue.main
     }
     
-    func currentVideoOrientation() -> AVCaptureVideoOrientation {
-        var orientation: AVCaptureVideoOrientation
-        
-        switch UIDevice.current.orientation {
-        case .portrait:
-            orientation = AVCaptureVideoOrientation.portrait
-        case .landscapeRight:
-            orientation = AVCaptureVideoOrientation.landscapeLeft
-        case .portraitUpsideDown:
-            orientation = AVCaptureVideoOrientation.portraitUpsideDown
-        default:
-            orientation = AVCaptureVideoOrientation.landscapeRight
-        }
-        
-        return orientation
-    }
-    
     func setTorchMode(_ torchMode: AVCaptureDevice.TorchMode, for device: AVCaptureDevice) {
         if device.isTorchModeSupported(torchMode) && device.torchMode != torchMode {
             do
@@ -250,8 +233,7 @@ private extension CameraManager {
         
         if (connection?.isVideoOrientationSupported)! {
             switch capturedOrientation {
-            case .landscapeLeft: connection?.videoOrientation = .landscapeLeft
-            case .landscapeRight: connection?.videoOrientation = .landscapeRight
+            case .landscapeLeft, .landscapeRight: connection?.videoOrientation = .landscapeRight
             default: connection?.videoOrientation = .portrait
             }
             
@@ -310,10 +292,19 @@ extension CameraManager: AVCaptureFileOutputRecordingDelegate, AVCapturePhotoCap
             didCapturedPhoto?(cropImage, nil)
         } else {
             
-            if capturedOrientation != .portrait , let cgImage = image.cgImage {
+            guard let cgImage = image.cgImage else {
+                didCapturedPhoto?(image, nil)
+                return
+            }
+            
+            switch capturedOrientation {
+            case .landscapeLeft:
+                let newImage = UIImage(cgImage: cgImage, scale: 1.0, orientation: .down)
+                didCapturedPhoto?(newImage, nil)
+            case .landscapeRight:
                 let newImage = UIImage(cgImage: cgImage, scale: 1.0, orientation: .up)
                 didCapturedPhoto?(newImage, nil)
-            } else {
+            default:
                 didCapturedPhoto?(image, nil)
             }
         }

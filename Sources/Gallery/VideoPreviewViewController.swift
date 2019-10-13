@@ -105,7 +105,7 @@ class VideoPreviewController: UIViewController {
         }
         
         topView.title = nil
-        topView.mode = .photoLibrarySelected
+        topView.mode = .cameraSelected
         
         view.addSubview(imageView)
         imageView.leadingAnchor.constraint(equalTo: safearea.leadingAnchor).isActive = true

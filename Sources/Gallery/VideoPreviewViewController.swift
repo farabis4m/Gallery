@@ -43,11 +43,29 @@ class VideoPreviewController: UIViewController {
         switch mode {
         case .asset(let asset):
             asset.getURL { [weak self] url in
-                self?.selected(url: url)
+                guard let welf = self else { return }
+                welf.selected(url: welf.copyToURl(url: url))
             }
         case .url(let url):
             selected(url: url)
         }
+    }
+    
+ 
+    
+    private var tempFilePath: URL = {
+        let paths = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)
+        let documentsDirectory = paths[0] as NSString
+        let filePath: String = documentsDirectory.appendingPathComponent(GalleryConfig.shared.videoFileName)
+        if FileManager.default.fileExists(atPath: filePath) {
+            try? FileManager.default.removeItem(atPath: filePath)
+        }
+        return URL(fileURLWithPath: filePath)
+    }()
+    
+    func copyToURl(url: URL?) -> URL? {
+        guard let url = url else { return nil }
+        return FileManager.default.secureCopyItem(at: url, to: tempFilePath)
     }
     
     func selected(url: URL?) {
@@ -136,7 +154,7 @@ private extension VideoPreviewController {
     func makeImageView() -> UIImageView {
         let imgView = UIImageView()
         imgView.translatesAutoresizingMaskIntoConstraints = false
-        imgView.contentMode = .scaleToFill
+        imgView.contentMode = .scaleAspectFill
         imgView.clipsToBounds = true
         return imgView
     }
@@ -168,3 +186,20 @@ extension VideoPreviewController {
         }
     }
 }
+
+extension FileManager {
+
+     open func secureCopyItem(at srcURL: URL, to dstURL: URL) -> URL? {
+         do {
+             if FileManager.default.fileExists(atPath: dstURL.path) {
+                 try FileManager.default.removeItem(at: dstURL)
+             }
+             try FileManager.default.copyItem(at: srcURL, to: dstURL)
+         } catch (let error) {
+             print("Cannot copy item at \(srcURL) to \(dstURL): \(error)")
+             return nil
+         }
+         return dstURL
+     }
+
+ }

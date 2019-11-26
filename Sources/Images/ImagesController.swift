@@ -354,9 +354,33 @@ extension ImagesController: UICollectionViewDataSource, UICollectionViewDelegate
         EventHub.shared.doneWithImages?()
     } else if let item = items[indexPath.item] as? Video {
         cart.video = item
-        EventHub.shared.doneWithVideos?()
+        if greaterThanMaximumSize(asset: item.asset) {
+            EventHub.shared.videoSizeExceeded?()
+        } else {
+            EventHub.shared.doneWithVideos?()
+        }
     }
   }
+    
+    func greaterThanMaximumSize(asset: PHAsset) -> Bool {
+        let resources = PHAssetResource.assetResources(for: asset) // your PHAsset
+
+        var sizeOnDisk: Int64? = 0
+
+        if let resource = resources.first {
+          let unsignedInt64 = resource.value(forKey: "fileSize") as? CLong
+          sizeOnDisk = Int64(bitPattern: UInt64(unsignedInt64!))
+            if let size = sizeOnDisk {
+                let mb = Units(bytes: size).megabytes
+                print(mb)
+                return mb > 40
+            }
+        }
+        
+        return false
+    }
+    
+    
     
     func configVideos(with item: Video) {
         if let selectedItem = cart.video, selectedItem == item {
@@ -405,4 +429,17 @@ extension ImagesController: UICollectionViewDataSource, UICollectionViewDelegate
       cell.frameView.alpha = 0
     }
   }
+}
+
+public struct Units {
+    
+    public let bytes: Int64
+    
+    public var kilobytes: Double {
+       return Double(bytes) / 1_024
+     }
+    
+     public var megabytes: Double {
+       return kilobytes / 1_024
+     }
 }

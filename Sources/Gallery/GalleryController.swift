@@ -6,6 +6,7 @@ public protocol GalleryControllerDelegate: class {
     func galleryController(_ controller: GalleryController, didfinish withImage: UIImage)
     func galleryController(_ controller: GalleryController, didSelectVideo videoURL: URL?, previewImage: UIImage?)
     func galleryControllerDidCancel(_ controller: GalleryController)
+    func galleryControllerDidExceedSizeofSelectedVideo(_ controller: GalleryController)
 }
 
 open class GalleryController: UIViewController {
@@ -134,6 +135,12 @@ extension GalleryController {
         EventHub.shared.videoUrl = { [weak self] url, image in
             if let strongSelf = self {
                 strongSelf.delegate?.galleryController(strongSelf, didSelectVideo: url, previewImage: image)
+            }
+        }
+        
+        EventHub.shared.videoSizeExceeded = { [weak self] in
+            if let strongSelf = self {
+                strongSelf.delegate?.galleryControllerDidExceedSizeofSelectedVideo(strongSelf)
             }
         }
     }

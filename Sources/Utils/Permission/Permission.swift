@@ -20,7 +20,7 @@ struct Permission {
         return .restricted
       case .denied:
         return .denied
-      case .authorized:
+      case .authorized, .limited:
         return .authorized
       }
     }

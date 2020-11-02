@@ -262,7 +262,7 @@ private extension CameraManager {
             photoSettings.flashMode = .off
         }
         
-        if let firstAvailablePreviewPhotoPixelFormatTypes = photoSettings.availablePreviewPhotoPixelFormatTypes.first {
+        if let firstAvailablePreviewPhotoPixelFormatTypes = photoSettings.__availablePreviewPhotoPixelFormatTypes.first {
             photoSettings.previewPhotoFormat = [kCVPixelBufferPixelFormatTypeKey as String: firstAvailablePreviewPhotoPixelFormatTypes]
         }
         cameraOutput?.capturePhoto(with: photoSettings, delegate: self)

@@ -67,6 +67,18 @@ class ViewController: UIViewController, LightboxControllerDismissalDelegate, Gal
       }
     }
   }
+  
+  func galleryController(_ controller: GalleryController, didfinish withImage: UIImage) {
+    
+  }
+  
+  func galleryController(_ controller: GalleryController, didSelectVideo videoURL: URL?, previewImage: UIImage?) {
+    
+  }
+  
+  func galleryControllerDidExceedSizeofSelectedVideo(_ controller: GalleryController) {
+    
+  }
 
   func galleryController(_ controller: GalleryController, didSelectImages images: [Image]) {
     controller.dismiss(animated: true, completion: nil)
